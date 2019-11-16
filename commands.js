@@ -4,7 +4,8 @@ var setPrefix = require('./prefix.js').setPrefix;
 
 module.exports = {
   hmw: hmw,
-  prefix: prefix
+  prefix: prefix,
+  commands: commands
 }
 
 const permissionGroups = {
