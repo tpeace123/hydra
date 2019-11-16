@@ -39,6 +39,14 @@ function prefix(message, args) {
   else message.author.send("I don't have the permissions: ", permissionGroups.basic);
 }
 
+function commands(message, args) {
+  if (_hasPermission(message, permissionGroups.basic) {
+    let cmds = module.exports.keys();
+    message.channel.send('Usable commands: ' + JSON.stringify(cmds));
+  }
+  else message.author.send("I don't have the permissions: " + permissionGroups.basic);
+}
+
 function _hasPermission(message, group) {
   return message.guild.me.hasPermission(group);
 }
