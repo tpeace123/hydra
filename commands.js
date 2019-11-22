@@ -301,11 +301,6 @@ function commands(message, args, client) {
           inline: false,
         },
         {
-          name: "welcome status",
-          value: "Get the current status for welcomes.",
-          inline: false,
-        },
-        {
           name: '\u200b',
           value: '\u200b',
         },
