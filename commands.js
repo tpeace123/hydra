@@ -347,8 +347,8 @@ function roll(message, args) {
   if (_hasPermission(message, userPermissionGroups.basic)) {
     let d1 = Math.ceil(Math.random() * 6);
     let d2 = Math.ceil(Math.random() * 6);
-    if (args && args.length) {
-      let sum = d1 + d2;
+    let sum = d1 + d2;
+    if (!(args && args.length)) {
       message.channel.send(`You rolled a ${d1} and a ${d2}. Sum: ${sum}`);
     }
     else if (args[0] == 1) {
@@ -359,7 +359,7 @@ function roll(message, args) {
     }
     else if (args[0] == 3) {
       let d3 = Math.ceil(Math.random() * 6);
-      let sum = d1 + d2 + d3;
+      sum += d3;
       message.channel.send(`You rolled a ${d1}, ${d2}, and a ${d3}. Sum: ${sum}`);
     }
     else {

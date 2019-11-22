@@ -20,8 +20,6 @@ client.on('guildMemberAdd', _addMemberToGuild);
 
 client.on('guildDelete', _deleteGuild);
 
-// dbl.on('posted', _dblOn);
-
 function _ready() {
   _setActivity();
   console.log(`\nConnected as ${client.user.tag} on ${_getServerCount()} servers`);
