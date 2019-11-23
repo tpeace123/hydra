@@ -59,13 +59,13 @@ function _addMemberToGuild(member) {
       },
       fields: [
         {
-          name: "Username",
-          value: `${member}`,
+          name: "Display Name",
+          value: `${member.displayName}`,
           inline: true,
         },
         {
-          name: '\u200b',
-          value: '\u200b',
+          name: 'Username',
+          value: `${member.user.tag}`,
           inline: true,
         },
       ],
@@ -76,11 +76,6 @@ function _addMemberToGuild(member) {
       }
     }
   });
-  if (member.guild.id == config.server) {
-    if (!member.bot) {
-      member.addRole(config.server_role);
-    }
-  }
 }
 
 function _createGuild(guild) {
