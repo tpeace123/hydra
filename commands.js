@@ -495,7 +495,10 @@ function bulkdel(message, args) {
     if (_userHasPermission(message, userPermissionGroups.admin)) {
       if (args && args.length) {
         if (!isNaN(args[0])) {
-          message.channel.bulkDelete(args[0]);
+          message.channel.bulkDelete(args[0]).catch(function(err) {
+            message.author.send("I was unable to delete messages in that channel.\nMake sure that I am bulk deleting messages under 14 days old.");
+            console.error(err);
+          });
         } else {
           message.reply(`Usage: ${getPrefix(message)}bulkdel <number_of_message>`);
         }
@@ -582,6 +585,11 @@ function invite(message, args, client) {
           {
             name: "My support server",
             value: `${config.server_link}\nView this for bot updates and socializing.`,
+            inline: false,
+          },
+          {
+            name: "Voting link",
+            value: `[Vote](${config.vote_link})`,
             inline: false,
           },
         ],
