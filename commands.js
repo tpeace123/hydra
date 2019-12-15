@@ -24,14 +24,16 @@ module.exports = {
   invite: invite,
   avatar: avatar,
   flip: flip,
-  join: join,
-  leave: leave,
+  // join: join,
+  // leave: leave,
   add: add,
   subtract: subtract,
   divide: divide,
   multiply: multiply,
   welcome: welcome,
   help: help,
+  react: react,
+  '8ball': ball
 }
 
 const permissionGroups = {
@@ -42,6 +44,7 @@ const permissionGroups = {
   manage: ['MANAGE_MESSAGES'],
   join: ['SEND_MESSAGES', 'CONNECT'],
   speak: ['SEND_MESSAGES', 'SPEAK'],
+  react: ['SEND_MESSAGES', 'ADD_REACTIONS']
 }
 
 const userPermissionGroups = {
@@ -173,6 +176,21 @@ function commands(message, args, client) {
           inline: false,
         },
         {
+          name: "ping/pong",
+          value: '`ping` for ping and `pong` for pong.',
+          inline: false,
+        },
+        {
+          name: "react",
+          value: "Have me react with all server emojis (or until I reach message reaction limit)",
+          inline: false,
+        },
+        {
+          name: "8ball",
+          value: "Get wisdom from the trusty 8ball",
+          inline: false,
+        },
+        {
           name: "add <numbers>",
           value: "Add numbers together",
           inline: false,
@@ -210,11 +228,6 @@ function commands(message, args, client) {
         {
           name: "suggest",
           value: "Suggest a suggestion for me to have.",
-          inline: false,
-        },
-        {
-          name: "Ping/Pong",
-          value: '\u200b',
           inline: false,
         },
         {
@@ -499,7 +512,8 @@ function bulkdel(message, args) {
             message.author.send("I was unable to delete messages in that channel.\nMake sure that I am bulk deleting messages under 14 days old.");
             console.error(err);
           });
-        } else {
+        }
+        else {
           message.reply(`Usage: ${getPrefix(message)}bulkdel <number_of_message>`);
         }
       }
@@ -837,6 +851,36 @@ function welcome(message, args) {
     }
     else {
       message.author.send("You are missing the permissions: " + userPermissionGroups.admin);
+    }
+  }
+  else {
+    message.author.send("I am missing the permissions: " + permissionGroups.basic);
+  }
+}
+
+function react(message) {
+  if (_hasPermission(message, permissionGroups.react)) {
+    message.guild.emojis.forEach(function(emoji) {
+      message.react(emoji).catch(function(err) {
+        return;
+      });
+    });
+  }
+  else {
+    message.author.send("I am missing the permissions: " + permissionGroups.react);
+  }
+}
+
+function ball(message, args) {
+  if (_hasPermission(message, permissionGroups.basic)) {
+    if (args && args.length) {
+    let c = Math.ceil(Math.random() * 3);
+      if (c === 1) message.channel.send("Yes.");
+      else if (c === 2) message.channel.send("No.");
+      else message.channel.send("Maybe.");
+    }
+    else {
+      message.author.send(`Usage: \`${getPrefix(message)}8ball <arguments>\``);
     }
   }
   else {
