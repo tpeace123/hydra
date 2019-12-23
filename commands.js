@@ -1,4 +1,5 @@
 var config = require('./hydrauth.json');
+// var config = require('./auth.json');
 var getPrefix = require('./prefix.js').getPrefix;
 var setPrefix = require('./prefix.js').setPrefix;
 var resetPrefix = require('./prefix.js').resetPrefix;
@@ -7,6 +8,7 @@ var getWelcome = require('./welcome.js').getChannel;
 var resetWelcome = require('./welcome.js').removeChannel;
 var disableWelcome = require('./welcome.js').disableChannel;
 var welEnable = require('./welcome.js').getEnable;
+var blackjack = require('./hydrajack.js').blackjack;
 
 module.exports = {
   hmw: hmw,
@@ -33,7 +35,8 @@ module.exports = {
   welcome: welcome,
   help: help,
   react: react,
-  '8ball': ball
+  '8ball': ball,
+  blackjack: jack
 }
 
 const permissionGroups = {
@@ -188,6 +191,11 @@ function commands(message, args, client) {
         {
           name: "8ball",
           value: "Get wisdom from the trusty 8ball",
+          inline: false,
+        },
+        {
+          name: "blackjack",
+          value: "Play a little blackjack with an AI",
           inline: false,
         },
         {
@@ -888,6 +896,15 @@ function ball(message, args) {
   }
 }
 
+function jack(message, args, client) {
+  if (_hasPermission(message, permissionGroups.basic)) {
+    blackjack(message, client);
+  }
+  else {
+    message.author.send("I am missing the permissions: " + permissionGroups.basic);
+  }
+}
+
 function _hasPermission(message, group) {
   return message.guild.me.hasPermission(group);
 }
@@ -901,7 +918,7 @@ function _welcomeSet(message, args) {
     message.author.send(`Usage: ${getPrefix(message)}welcome set <arguments>`);
     return;
   }
-  if (_findChannel(message, args[1]) === true || args[1] === "default") {
+  if (args[1] === "default" || _findChannel(message, args[1]) === true) {
     
     if (args[1] === "default") {
       resetWelcome(message);
@@ -931,8 +948,9 @@ function _welcomeDisable(message) {
 function _findChannel(message, channel) {
   let found = false;
   message.guild.channels.forEach(function(ch) {
-    if (ch.id === channel) {
+    if (ch.id == channel) {
       found = true;
+      return found;
     }
   });
   return found;

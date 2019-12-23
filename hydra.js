@@ -1,4 +1,5 @@
 var config = require('./hydrauth.json');
+// var config = require('./auth.json');
 var Discord = require('discord.js');
 var client = new Discord.Client();
 var DBL = require('dblapi.js');
@@ -59,13 +60,13 @@ function _addMemberToGuild(member) {
       },
       fields: [
         {
-          name: "Display Name",
-          value: `${member.displayName}`,
+          name: 'Username',
+          value: `${member.user.tag}`,
           inline: true,
         },
         {
-          name: 'Username',
-          value: `${member.user.tag}`,
+          name: '\u200b',
+          value: '\u200b',
           inline: true,
         },
       ],

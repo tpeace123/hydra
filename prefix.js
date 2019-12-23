@@ -7,6 +7,7 @@ module.exports = {
 var fs = require('fs');
 
 var defaultPrefix = require('./hydrauth.json').prefix;
+// var defaultPrefix = require('./auth.json').prefix;
 var prefixes = require('./hydra_json/prefixes.json');
 
 function getPrefix(message) {

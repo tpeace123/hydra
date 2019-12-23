@@ -9,6 +9,7 @@ module.exports = {
 var fs = require('fs');
 
 var defaultChannel = require('./hydrauth.json').welcome_channel;
+// var defaultChannel = require('./auth.json').welcome_channel;
 var channels = require('./hydra_json/welcomes.json');
 var enabled = require('./hydra_json/enabled.json')
 
