@@ -327,12 +327,12 @@ function commands(message, args, client) {
         },
         {
           name: 'Owner',
-          value: config.ownerUser,
+          value: `${client.users.get(config.ownerID).tag}`,
           inline: false,
         },
         {
           name: 'Bot Developer',
-          value: config.devUser,
+          value: `${client.users.get(config.devID).tag}`,
           inline: false,
         },
         {
