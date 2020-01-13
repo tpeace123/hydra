@@ -1,14 +1,32 @@
 var config = require('./hydrauth.json');
 // var config = require('./auth.json');
+var commandsList = require('./commandsList.json');
+
 var getPrefix = require('./prefix.js').getPrefix;
 var setPrefix = require('./prefix.js').setPrefix;
 var resetPrefix = require('./prefix.js').resetPrefix;
+
 var setWelcome = require('./welcome.js').setChannel;
 var getWelcome = require('./welcome.js').getChannel;
 var resetWelcome = require('./welcome.js').removeChannel;
 var disableWelcome = require('./welcome.js').disableChannel;
 var welEnable = require('./welcome.js').getEnable;
+
 var blackjack = require('./hydrajack.js').blackjack;
+
+var getChannel = require('./logs.js').getChannel;
+var setChannel = require('./logs.js').setChannel;
+var disableChannel = require('./logs.js').disableChannel;
+var getMessage = require('./logs.js').getMessage;
+var setMessage = require('./logs.js').setMessage;
+var disableMessage = require('./logs.js').disableMessage;
+var getRole = require('./logs.js').getRole;
+var setRole = require('./logs.js').setRole;
+var disableRole = require('./logs.js').disableRole;
+var getLogsChannel = require('./logs.js').getLogsChannel;
+var setLogsChannel = require('./logs.js').setLogsChannel;
+var disableLogs = require('./logs.js').disableLogs;
+var getStatus = require('./logs.js').getStatus;
 
 module.exports = {
   hmw: hmw,
@@ -36,7 +54,8 @@ module.exports = {
   help: help,
   react: react,
   '8ball': ball,
-  blackjack: jack
+  blackjack: jack,
+  logs: logs
 }
 
 const permissionGroups = {
@@ -125,238 +144,80 @@ function commandsasd(message, args) {
 
 function commands(message, args, client) {
   let color = Math.ceil(Math.random() * 16777215);
-  message.author.send({
-    embed: {
-      color: color,
-      author: {
-        name: client.user.tag,
-        icon_url: client.user.displayAvatarURL(),
-      },
-      title: "Hydra Commands",
-      description: "A list of my commands!",
-      thumbnail: {
-        url: client.user.displayAvatarURL(),
-      },
-      fields: [
-        {
-          name: "Global Prefix",
-          value: config.prefix,
-          inline: true,
-        },
-        {
-          name: "Guild Prefix",
-          value: getPrefix(message),
-          inline: true,
-        },
-        {
-          name: '\u200b',
-          value: '\u200b',
-          inline: false,
-        },
-        {
-          name:'commands',
-          value: 'A list of commands (This)',
-          inline: false,
-        },
-        {
-          name: "hmw <arguments>",
-          value: "Ask for help from me",
-          inline: true,
-        },
-        {
-          name: 'roll [1-3]',
-          value: "Roll a couple dice. You're not gambling",
-          inline: false,
-        },
-        {
-          name: 'flip',
-          value: "Flip a coin",
-          inline: false,
-        },
-        {
-          name: "rip",
-          value: "RIP",
-          inline: false,
-        },
-        {
-          name: "ping/pong",
-          value: '`ping` for ping and `pong` for pong.',
-          inline: false,
-        },
-        {
-          name: "react",
-          value: "Have me react with all server emojis (or until I reach message reaction limit)",
-          inline: false,
-        },
-        {
-          name: "8ball",
-          value: "Get wisdom from the trusty 8ball",
-          inline: false,
-        },
-        {
-          name: "blackjack",
-          value: "Play a little blackjack with an AI",
-          inline: false,
-        },
-        {
-          name: "add <numbers>",
-          value: "Add numbers together",
-          inline: false,
-        },
-        {
-          name: "subtract <numbers>",
-          value: "Subtract numbers together. Numbers will subtract from the first.",
-          inline: false,
-        },
-        {
-          name: "multiply <numbers>",
-          value: "Multiply numbers together.",
-          inline: false,
-        },
-        {
-          name: "divide <numbers>",
-          value: "Divide numbers together. Numbers will divide from the first.",
-          inline: false,
-        },
-        {
-          name: 'links',
-          value: "A list of important links",
-          inline: false,
-        },
-        {
-          name: "invite",
-          value: "A link to invite me with.",
-          inline: false,
-        },
-        {
-          name: "avatar",
-          value: "Get your avatar.",
-          inline: false,
-        },
-        {
-          name: "suggest",
-          value: "Suggest a suggestion for me to have.",
-          inline: false,
-        },
-        {
-          name: '\u200b',
-          value: '\u200b',
-        },
-        {
-          name: '[] = optional field',
-          value: '\u200b',
-          inline: false,
-        },
-        {
-          name: '<> = required field',
-          value: '\u200b',
-          inline: false,
-        },  
-      ],
-      timestamp: new Date(),
-      footer: {
-        icon_url: message.author.displayAvatarURL(),
-        text: message.author.tag
-      }
-    }
-  });
-  message.author.send({
-    embed: {
-      color: color,
-      thumbnail: {
-        url: client.user.displayAvatarURL(),
-      },
-      fields: [
-        {
-          name: "kick <user> [reason]",
-          value: "Kick a user [with reason]. Must have the KICK_MEMBERS permission.",
-          inline: false,
-        },
-        {
-          name: "ban <user> [reason]",
-          value: "Ban a user (with reason). Must have the BAN_MEMBERS permission.",
-          inline: false,
-        },
-        {
-          name: "bulkdel <num_of_messages>",
-          value: "Bulk delete a number of messages.",
-          inline: false,
-        },
-        {
-          name: "prefix set <new_prefix>",
-          value: "Set a new prefix for the guild. Must have the ADMINISTRATOR permission.",
-          inline: false,
-        },
-        {
-          name: "prefix reset",
-          value: "Reset the guild prefix to the global prefix. Must have the ADMINISTRATOR permissions.",
-          inline: false,
-        },
-        {
-          name: '\u200b',
-          value: '\u200b',
-        },
-        {
-          name: "Welcome Channel Commands",
-          value: "The commands for changing welcome channels.\nAll commands require the ADMINISTRATOR permission.",
-          inline: false,
-        },
-        {
-          name: "welcome set <channel_id>",
-          value: "Set a welcome channel using a channel id.\nPass `default` as an argument to reset channel to default.",
-          inline: false,
-        },
-        {
-          name: "welcome get",
-          value: "Get the current welcome channel in the guild",
-          inline: false,
-        },
-        {
-          name: "welcome disable",
-          value: "Disable welcome message for this guild",
-          inline: false,
-        },
-        {
-          name: "welcome reset",
-          value: "Reset the welcome channel for the guild.\nDefault welcome channel is `welcomes` if I can find it in the guild.\nEnables welcome messages as well",
-          inline: false,
-        },
-        {
-          name: '\u200b',
-          value: '\u200b',
-        },
-        {
-          name: 'Owner',
-          value: `${client.users.get(config.ownerID).tag}`,
-          inline: false,
-        },
-        {
-          name: 'Bot Developer',
-          value: `${client.users.get(config.devID).tag}`,
-          inline: false,
-        },
-        {
-          name: '\u200b',
-          value: '\u200b',
-        },
-        {
-          name: '[] = optional field',
-          value: '\u200b',
-          inline: false,
-        },
-        {
-          name: '<> = required field',
-          value: '\u200b',
-          inline: false,
-        },
-      ],
-      timestamp: new Date(),
-      footer: {
-        icon_url: message.author.displayAvatarURL(),
-        text: message.author.tag
-      }
-    }
-  });
+  let options = ['social', 'mod', 'prefix', 'welcome', 'logs'];
+
+  commandsList.socialCommands.color = color;
+  commandsList.socialCommands.author.name = client.user.tag;
+  commandsList.socialCommands.author.icon_url = client.user.displayAvatarURL();
+  commandsList.socialCommands.thumbnail.url = client.user.displayAvatarURL();
+  commandsList.socialCommands.fields[0].value = config.prefix;
+  commandsList.socialCommands.fields[1].value = getPrefix(message);
+  commandsList.socialCommands.fields[22].value = client.users.get(config.userids.owner).tag;
+  commandsList.socialCommands.fields[23].value = client.users.get(config.userids.dev).tag;
+  commandsList.socialCommands.timestamp = new Date();
+  commandsList.socialCommands.footer.icon_url = message.author.displayAvatarURL();
+  commandsList.socialCommands.footer.text = message.author.tag;
+  
+  commandsList.modCommands.color = color;
+  commandsList.modCommands.author.name = client.user.tag;
+  commandsList.modCommands.author.icon_url = client.user.displayAvatarURL();
+  commandsList.modCommands.thumbnail.url = client.user.displayAvatarURL();
+  commandsList.modCommands.fields[0].value = config.prefix;
+  commandsList.modCommands.fields[1].value = getPrefix(message);
+  commandsList.modCommands.fields[9].value = client.users.get(config.userids.owner).tag;
+  commandsList.modCommands.fields[10].value = client.users.get(config.userids.dev).tag;
+  commandsList.modCommands.timestamp = new Date();
+  commandsList.modCommands.footer.icon_url = message.author.displayAvatarURL();
+  commandsList.modCommands.footer.text = message.author.tag;
+
+  commandsList.logsCommands.color = color;
+  commandsList.logsCommands.author.name = client.user.tag;
+  commandsList.logsCommands.author.icon_url = client.user.displayAvatarURL();
+  commandsList.logsCommands.thumbnail.url = client.user.displayAvatarURL();
+  commandsList.logsCommands.fields[0].value = config.prefix;
+  commandsList.logsCommands.fields[1].value = getPrefix(message);
+  commandsList.logsCommands.fields[13].value = client.users.get(config.userids.owner).tag;
+  commandsList.logsCommands.fields[14].value = client.users.get(config.userids.dev).tag;
+  commandsList.logsCommands.timestamp = new Date();
+  commandsList.logsCommands.footer.icon_url = message.author.displayAvatarURL();
+  commandsList.logsCommands.footer.text = message.author.tag;
+
+  commandsList.welcomeCommands.color = color;
+  commandsList.welcomeCommands.author.name = client.user.tag;
+  commandsList.welcomeCommands.author.icon_url = client.user.displayAvatarURL();
+  commandsList.welcomeCommands.thumbnail.url = client.user.displayAvatarURL();
+  commandsList.welcomeCommands.fields[0].value = config.prefix;
+  commandsList.welcomeCommands.fields[1].value = getPrefix(message);
+  commandsList.welcomeCommands.fields[10].value = client.users.get(config.userids.owner).tag;
+  commandsList.welcomeCommands.fields[11].value = client.users.get(config.userids.dev).tag;
+  commandsList.welcomeCommands.timestamp = new Date();
+  commandsList.welcomeCommands.footer.icon_url = message.author.displayAvatarURL();
+  commandsList.welcomeCommands.footer.text = message.author.tag;
+
+  commandsList.prefixCommands.color = color;
+  commandsList.prefixCommands.author.name = client.user.tag;
+  commandsList.prefixCommands.author.icon_url = client.user.displayAvatarURL();
+  commandsList.prefixCommands.thumbnail.url = client.user.displayAvatarURL();
+  commandsList.prefixCommands.fields[0].value = config.prefix;
+  commandsList.prefixCommands.fields[1].value = getPrefix(message);
+  commandsList.prefixCommands.fields[8].value = client.users.get(config.userids.owner).tag;
+  commandsList.prefixCommands.fields[9].value = client.users.get(config.userids.dev).tag;
+  commandsList.prefixCommands.timestamp = new Date();
+  commandsList.prefixCommands.footer.icon_url = message.author.displayAvatarURL();
+  commandsList.prefixCommands.footer.text = message.author.tag;
+
+  if (!args[0] || options.indexOf(args[0]) === -1) {
+    message.author.send({embed: commandsList.socialCommands});
+    message.author.send({embed: commandsList.modCommands});
+    message.author.send({embed: commandsList.prefixCommands});
+    message.author.send({embed: commandsList.welcomeCommands});
+    message.author.send({embed: commandsList.logsCommands});
+  }
+  else if (args[0] === "social") message.author.send({embed: commandsList.socialCommands});
+  else if (args[0] === "mod") message.author.send({embed: commandsList.modCommands});
+  else if (args[0] === "prefix") message.author.send({embed: commandsList.prefixCommands});
+  else if (args[0] === "welcome") message.author.send({embed: commandsList.welcomeCommands});
+  else message.author.send({embed: commandsList.logsCommands});
 }
 
 function roll(message, args) {
@@ -517,8 +378,7 @@ function bulkdel(message, args) {
       if (args && args.length) {
         if (!isNaN(args[0])) {
           message.channel.bulkDelete(args[0]).catch(function(err) {
-            message.author.send("I was unable to delete messages in that channel.\nMake sure that I am bulk deleting messages under 14 days old.");
-            console.error(err);
+            message.author.send("I was unable to delete messages in that channel.\nMake sure that I am not bulk deleting more than 100 messages and messages under 14 days old.");
           });
         }
         else {
@@ -601,7 +461,7 @@ function invite(message, args, client) {
         fields: [
           {
             name: "Bot invite link",
-            value: `[Invite link](${config.invite_link})`,
+            value: `[Invite link](${config.dbl.invite})`,
             inline: false,
           },
           {
@@ -611,7 +471,7 @@ function invite(message, args, client) {
           },
           {
             name: "Voting link",
-            value: `[Vote](${config.vote_link})`,
+            value: `[Vote](${config.dbl.vote})`,
             inline: false,
           },
         ],
@@ -905,6 +765,73 @@ function jack(message, args, client) {
   }
 }
 
+function logs(message, args) {
+  if (_hasPermission(message, permissionGroups.basic)) {
+    if (_userHasPermission(message, userPermissionGroups.admin)) {
+      if (args && args.length) {
+        if (args[0] === "disable") {
+          disableLogs(message);
+          message.channel.send("Logs are now disabled for this server.");
+        }
+        else if (args[1] && args[0] === "set") {
+          if (_findChannel(message, args[1]) === true) {
+            setLogsChannel(message, args[1]);
+            message.channel.send(`Logs channel set to \`${getLogsChannel(message.guild)}\``);
+          }
+          else {
+            message.author.send(`I was unable to find text channel id: \`${args[1]}\``);
+          }
+        }
+        else if (args[0] === "status") {
+          message.channel.send(`\`\`\`yaml\nChannel Logs: ${getStatus(message)[0]}\nMessage logs: ${getStatus(message)[1]}\nRole Logs: ${getStatus(message)[2]}\nLogs Channel: ${getStatus(message)[3]}\`\`\``);
+        }
+        else if (args[1] && args[0] === "channel" && args[1] === "enable") {
+          setChannel(message);
+          message.channel.send(`\`\`\`yaml\nChannel Logs: ${getStatus(message)[0]}\nMessage logs: ${getStatus(message)[1]}\nRole Logs: ${getStatus(message)[2]}\nLogs Channel: ${getStatus(message)[3]}\`\`\``);
+        }
+        else if (args[1] && args[0] === "channel" && args[1] === "disable") {
+          disableChannel(message);
+          message.channel.send(`\`\`\`yaml\nChannel Logs: ${getStatus(message)[0]}\nMessage logs: ${getStatus(message)[1]}\nRole Logs: ${getStatus(message)[2]}\nLogs Channel: ${getStatus(message)[3]}\`\`\``);
+        }
+        else if (args[1] && args[0] === "message" && args[1] === "enable") {
+          setMessage(message);
+          message.channel.send(`\`\`\`yaml\nChannel Logs: ${getStatus(message)[0]}\nMessage logs: ${getStatus(message)[1]}\nRole Logs: ${getStatus(message)[2]}\nLogs Channel: ${getStatus(message)[3]}\`\`\``);
+        }
+        else if (args[1] && args[0] === "message" && args[1] === "enable") {
+          disableMessage(message);
+          message.channel.send(`\`\`\`yaml\nChannel Logs: ${getStatus(message)[0]}\nMessage logs: ${getStatus(message)[1]}\nRole Logs: ${getStatus(message)[2]}\nLogs Channel: ${getStatus(message)[3]}\`\`\``);
+        }
+        else if (args[1] && args[0] === "role" && args[1] === "enable") {
+          setRole(message);
+          message.channel.send(`\`\`\`yaml\nChannel Logs: ${getStatus(message)[0]}\nMessage logs: ${getStatus(message)[1]}\nRole Logs: ${getStatus(message)[2]}\nLogs Channel: ${getStatus(message)[3]}\`\`\``);
+        }
+        else if (args[1] && args[0] === "role" && args[1] === "disable") {
+          disableRole(message);
+          message.channel.send(`\`\`\`yaml\nChannel Logs: ${getStatus(message)[0]}\nMessage logs: ${getStatus(message)[1]}\nRole Logs: ${getStatus(message)[2]}\nLogs Channel: ${getStatus(message)[3]}\`\`\``);
+        }
+        else if (args[0] === "enable") {
+          setChannel(message);
+          setMessage(message);
+          setRole(message);
+          message.channel.send(`\`\`\`yaml\nChannel Logs: ${getStatus(message)[0]}\nMessage logs: ${getStatus(message)[1]}\nRole Logs: ${getStatus(message)[2]}\nLogs Channel: ${getStatus(message)[3]}\`\`\``);
+        }
+        else {
+          message.author.send(`\`\`\`yaml\nUsage options:\n\t${getPrefix(message)}logs set <arguments>\n\t${getPrefix(message)}logs enable/disable\n\t${getPrefix(message)}logs status\n\t${getPrefix(message)}logs channel enable/disable\n\t${getPrefix(message)}logs message enable/disable\n\t${getPrefix(message)}logs role enable/disable\`\`\``);
+        }
+      }
+      else {
+        message.author.send(`\`\`\`yaml\nUsage options:\n\t${getPrefix(message)}logs set <arguments>\n\t${getPrefix(message)}logs enable/disable\n\t${getPrefix(message)}logs status\n\t${getPrefix(message)}logs channel enable/disable\n\t${getPrefix(message)}logs message enable/disable\n\t${getPrefix(message)}logs role enable/disable\`\`\``);
+      }
+    }
+    else {
+      message.author.send("You are missing the permissions: " + userPermissionGroups.admin);
+    }
+  }
+  else {
+    message.author.send("I am missing the permissions: " + permissionGroups.basic);
+  }
+}
+
 function _hasPermission(message, group) {
   return message.guild.me.hasPermission(group);
 }
@@ -919,7 +846,6 @@ function _welcomeSet(message, args) {
     return;
   }
   if (args[1] === "default" || _findChannel(message, args[1]) === true) {
-    
     if (args[1] === "default") {
       resetWelcome(message);
     }
@@ -929,7 +855,7 @@ function _welcomeSet(message, args) {
     }
   }
   else {
-    message.author.send(`I was unable to find channel id: \`${args[1]}\`\nUsage:\n\`\`\`yaml\n ${getPrefix(message)}welcome set <channel_id>\`\`\``);
+    message.author.send(`I was unable to find text channel id: \`${args[1]}\`\nUsage:\n\`\`\`yaml\n ${getPrefix(message)}welcome set <channel_id>\`\`\``);
   }
 }
 
@@ -948,7 +874,7 @@ function _welcomeDisable(message) {
 function _findChannel(message, channel) {
   let found = false;
   message.guild.channels.forEach(function(ch) {
-    if (ch.id == channel) {
+    if (ch.id == channel && ch.type === 'text') {
       found = true;
       return found;
     }

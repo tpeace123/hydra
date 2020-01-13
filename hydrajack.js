@@ -206,7 +206,7 @@ function blackjack(message, client) {
           }
           let dealt = false;
           for (let i = num; i > 0; i--) {
-            if (total[i] < 15) {
+            if (total[i] < 17) {
               let card = Math.ceil(Math.random() * 52);
               while (cardsUsed[card] === true) card = Math.ceil(Math.random() * 52);
               cardsUsed[card] = true;
