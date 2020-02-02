@@ -66,7 +66,7 @@ module.exports = {
 function blackjack(message, client) {
   let color = Math.ceil(Math.random() * 16777215);
   let image = imageURLs[Math.ceil(Math.random() * 3)];
-  const filter = m => m.author.id === message.author.id && (m.content.toLowerCase() === "hit" || m.content.toLowerCase() === "miss");
+  const filter = m => m.author.id === message.author.id && (m.content.toLowerCase() === "hit" || m.content.toLowerCase() === "stand");
   let player = [];
   let ai = [];
   let cardsUsed = _init();
@@ -116,7 +116,7 @@ function blackjack(message, client) {
               inline: true,
             },
             {
-              name: `Type \`miss\` to pass`,
+              name: `Type \`stand\` to stand`,
               value: '\u200b',
               inline: true,
             },
@@ -133,7 +133,7 @@ function blackjack(message, client) {
     }
 
     function _player(collected = _awaitMessages()) {
-      if (collected === "miss") _playerEnd();
+      if (collected === "stand") _playerEnd();
       else {
         let card = Math.ceil(Math.random() * 52);
         while (cardsUsed[card] === true) card = Math.ceil(Math.random() * 52);
@@ -168,7 +168,19 @@ function blackjack(message, client) {
     }
 
     function _playerEnd(win = 0) {
-      if (win === 1) _sendEmbed(true, 1);
+      if (win === 1) {
+        let total = _calculate(ai);
+        let tie = false;
+        for (let i = 0; i < total.length; i++) {
+          if (total[i] === 21) {
+            tie = true;
+            break;
+          }
+          else tie = false;
+        }
+        if (tie === true) _sendEmbed(true, 3);
+        else _sendEmbed(true, 1);
+      }
       else if (win === 2) _sendEmbed(true, 2);
       else _ai();
     }
@@ -205,8 +217,8 @@ function blackjack(message, client) {
             }
           }
           let dealt = false;
-          for (let i = num; i > 0; i--) {
-            if (total[i] < 17) {
+          for (let i = num; i >= 0; i--) {
+            if (total[i] <= 17) {
               let card = Math.ceil(Math.random() * 52);
               while (cardsUsed[card] === true) card = Math.ceil(Math.random() * 52);
               cardsUsed[card] = true;
@@ -280,7 +292,7 @@ function blackjack(message, client) {
               inline: true,
             },
             {
-              name: `Type \`miss\` to pass`,
+              name: `Type \`stand\` to stand`,
               value: '\u200b',
               inline: true,
             },
@@ -342,7 +354,7 @@ function blackjack(message, client) {
               inline: true,
             },
             {
-              name: `Type \`miss\` to pass`,
+              name: `Type \`stand\` to stand`,
               value: '\u200b',
               inline: true,
             },
