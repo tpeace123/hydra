@@ -1,10 +1,29 @@
 var config = require('./hydrauth.json');
 // var config = require('./auth.json');
+/* config
+{
+  "token": "<token>",
+  "prefix": "<default prefix>",
+  "sugChannel": "<suggestion channel>",
+  "welcome_channel": "<default welcome channel>",
+  "server_link": "https://discord.gg/T8w7dJW",
+  "dbl": {
+    "invite": "https://top.gg/bot/543909504706674688",
+    "token": "<dbl token>",
+    "vote": "https://top.gg/bot/543909504706674688/vote"
+  },
+  "userids": {
+    "dev": "<dev id>",
+    "owner": "<owner id>"
+  }
+}
+*/
 var Discord = require('discord.js');
 var client = new Discord.Client();
 var DBL = require('dblapi.js');
 var dbl = new DBL(config.dbl.token, client);
 var commands = require('./commands.js');
+var voiceCommands = require('./voiceCommands.js');
 var prefix = require('./prefix.js');
 var welChan = require('./welcome.js').getChannel;
 var welEnable = require('./welcome.js').getEnable;
@@ -18,6 +37,8 @@ client.login(config.token);
 client.on('ready', _ready);
 
 client.on('message', _parseMessage);
+
+client.on('message', _parseVC);
 
 client.on('guildCreate', _createGuild);
 
@@ -33,7 +54,7 @@ client.on('messageDelete', _messageDelete);
 
 client.on('messageDeleteBulk', _messageBulkDel);
 
-client.on('roleCreate', _roleCreate);
+// client.on('roleCreate', _roleCreate);
 
 client.on('roleDelete', _roleDelete);
 
@@ -50,6 +71,12 @@ function _ready() {
 function _parseMessage(message) {
   if (message && (message.author === client.user || message.author.bot || !message.guild)) return;
   else if (message && message.content && message.content.startsWith(prefix.getPrefix(message))) _processCommand(message);
+  else return;
+}
+
+async function _parseVC(message) {
+  if (message && (message.author === client.user || message.author.bot || !message.guild)) return;
+  else if (message && message.content && message.content.startsWith(prefix.getPrefix())) _vcCommand(message);
   else return;
 }
 
@@ -298,7 +325,6 @@ function _roleDelete(role) {
 }
 
 function _roleUpdate(oldRole, newRole) {
-  // console.log(newRole);
   if (!newRole.guild || getRole(newRole.guild) === false || oldRole.rawPosition !== newRole.rawPosition) return;
   let sendChannel = client.channels.get(getLogsChannel(newRole.guild));
   if (!sendChannel) return;
@@ -318,17 +344,17 @@ function _roleUpdate(oldRole, newRole) {
         {
           name: "Old Role Name",
           value: oldRole.name,
-          inline: true,
+          inline: true
         },
         {
           name: "New Role Name",
           value: newRole.name,
-          inline: true,
+          inline: true
         },
         {
           name: '\u200b',
           value: '\u200b',
-          inline: true,
+          inline: true
         },
         {
           name: "Old Role Permissions",
@@ -341,9 +367,19 @@ function _roleUpdate(oldRole, newRole) {
           inline: true
         },
         {
+          name: '\u200b',
+          value: '\u200b',
+          inline: true
+        },
+        {
           name: "Is Mentionable",
           value: newRole.mentionable,
-          inline: false
+          inline: true
+        },
+        {
+          name: "Is Distinguished",
+          value: newRole.hoist,
+          inline: true
         }
       ],
       timestamp: new Date()
@@ -359,6 +395,15 @@ function _processCommand(message) {
     commands[commandArray[0]](message, commandArray.slice(1), client);
   }
   else return;
+}
+
+async function _vcCommand(message) {
+  let command = message.content.substr(prefix.getPrefix(message).length);
+  let commandArray = command.split(' ');
+  if (!commandArray.length) return;
+  if (voiceCommands.hasOwnProperty(commandArray[0])) {
+    voiceCommands.voice(message, commandArray[0], commandArray.slice(1));
+  }
 }
 
 function _setActivity() {

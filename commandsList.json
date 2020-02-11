@@ -114,12 +114,12 @@
       {
         "name": "[] = optional field",
         "value": "\u200b",
-        "inline": "false"
+        "inline": "true"
       },
       {
         "name": "<> = required field",
         "value": "\u200b",
-        "inline": "false"
+        "inline": "true"
       },
       {
         "name": "Bot Owner",
@@ -207,12 +207,12 @@
       {
         "name": "[] = optional field",
         "value": "\u200b",
-        "inline": "false"
+        "inline": "true"
       },
       {
         "name": "<> = required field",
         "value": "\u200b",
-        "inline": "false"
+        "inline": "true"
       },
       {
         "name": "Bot Owner",
@@ -286,12 +286,12 @@
       {
         "name": "[] = optional field",
         "value": "\u200b",
-        "inline": "false"
+        "inline": "true"
       },
       {
         "name": "<> = required field",
         "value": "\u200b",
-        "inline": "false"
+        "inline": "true"
       },
       {
         "name": "Bot Owner",
@@ -360,12 +360,12 @@
       {
         "name": "[] = optional field",
         "value": "\u200b",
-        "inline": "false"
+        "inline": "true"
       },
       {
         "name": "<> = required field",
         "value": "\u200b",
-        "inline": "false"
+        "inline": "true"
       },
       {
         "name": "Bot Owner",
@@ -429,12 +429,86 @@
       {
         "name": "[] = optional field",
         "value": "\u200b",
+        "inline": "true"
+      },
+      {
+        "name": "<> = required field",
+        "value": "\u200b",
+        "inline": "true"
+      },
+      {
+        "name": "Bot Owner",
+        "value": "",
+        "inline": "false"
+      },
+      {
+        "name": "Bot Developer",
+        "value": "",
+        "inline": "false"
+      }
+    ],
+    "timestamp": "",
+    "footer": {
+      "icon_url": "",
+      "text": ""
+    }
+  },
+  "musicCommands": {
+    "color": "",
+    "author": {
+      "name": "",
+      "icon_url": ""
+    },
+    "thumbnail": {
+      "url": ""
+    },
+    "title": "Hydra Music Commands",
+    "description": "Music Commands list",
+    "fields": [
+      {
+        "name": "Default Prefix",
+        "value": "",
+        "inline": "false"
+      },
+      {
+        "name": "Guild Prefix",
+        "value": "",
+        "inline": "false"
+      },
+      {
+        "name": "\u200b",
+        "value": "\u200b",
+        "inline": "false"
+      },
+      {
+        "name": "join",
+        "value": "Have me join a voice channel. You must be in one as well.",
+        "inline": "false"
+      },
+      {
+        "name": "leave",
+        "value": "Have me leave the voice channel I am currently in.",
+        "inline": "false"
+      },
+      {
+        "name": "play <youtube_link>",
+        "value": "Have me play music from a valid YouTube link.",
+        "inline": "false"
+      },
+      {
+        "name": "\u200b",
+        "value": "\u200b",
         "inline": "false"
       },
       {
         "name": "<> = required field",
         "value": "\u200b",
-        "inline": "false"
+        "inline": "true"
+      },
+      {
+        "name": "[] = optional field",
+        "value": "\u200b",
+        "inline": "true"
       },
       {
         "name": "Bot Owner",

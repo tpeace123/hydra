@@ -2,18 +2,22 @@ var config = require('./hydrauth.json');
 // var config = require('./auth.json');
 var commandsList = require('./commandsList.json');
 
+// Prefix require
 var getPrefix = require('./prefix.js').getPrefix;
 var setPrefix = require('./prefix.js').setPrefix;
 var resetPrefix = require('./prefix.js').resetPrefix;
 
+// Welcome require
 var setWelcome = require('./welcome.js').setChannel;
 var getWelcome = require('./welcome.js').getChannel;
 var resetWelcome = require('./welcome.js').removeChannel;
 var disableWelcome = require('./welcome.js').disableChannel;
 var welEnable = require('./welcome.js').getEnable;
 
+// Blackjack require
 var blackjack = require('./hydrajack.js').blackjack;
 
+// Logs require
 var getChannel = require('./logs.js').getChannel;
 var setChannel = require('./logs.js').setChannel;
 var disableChannel = require('./logs.js').disableChannel;
@@ -44,8 +48,6 @@ module.exports = {
   invite: invite,
   avatar: avatar,
   flip: flip,
-  // join: join,
-  // leave: leave,
   add: add,
   subtract: subtract,
   divide: divide,
@@ -66,13 +68,15 @@ const permissionGroups = {
   manage: ['MANAGE_MESSAGES'],
   join: ['SEND_MESSAGES', 'CONNECT'],
   speak: ['SEND_MESSAGES', 'SPEAK'],
-  react: ['SEND_MESSAGES', 'ADD_REACTIONS']
+  react: ['SEND_MESSAGES', 'ADD_REACTIONS'],
+  nickname: ['SEND_MESSAGES', 'MANAGE_NICKNAMES']
 }
 
 const userPermissionGroups = {
   kick: ['KICK_MEMBERS'],
   ban: ['BAN_MEMBERS'],
-  admin: ['ADMINISTRATOR']
+  admin: ['ADMINISTRATOR'],
+  nickname: ['MANAGE_NICKNAMES']
 }
 
 function help(message) {
@@ -144,7 +148,7 @@ function commandsasd(message, args) {
 
 function commands(message, args, client) {
   let color = Math.ceil(Math.random() * 16777215);
-  let options = ['social', 'mod', 'prefix', 'welcome', 'logs'];
+  let options = ['social', 'mod', 'prefix', 'welcome', 'logs', 'music'];
 
   commandsList.socialCommands.color = color;
   commandsList.socialCommands.author.name = client.user.tag;
@@ -206,17 +210,31 @@ function commands(message, args, client) {
   commandsList.prefixCommands.footer.icon_url = message.author.displayAvatarURL();
   commandsList.prefixCommands.footer.text = message.author.tag;
 
+  commandsList.musicCommands.color = color;
+  commandsList.musicCommands.author.name = client.user.tag;
+  commandsList.musicCommands.author.icon_url = client.user.displayAvatarURL();
+  commandsList.musicCommands.thumbnail.url = client.user.displayAvatarURL();
+  commandsList.musicCommands.fields[0].value = config.prefix;
+  commandsList.musicCommands.fields[1].value = getPrefix(message);
+  commandsList.musicCommands.fields[9].value = client.users.get(config.userids.owner).tag;
+  commandsList.musicCommands.fields[10].value = client.users.get(config.userids.dev).tag;
+  commandsList.musicCommands.timestamp = new Date();
+  commandsList.musicCommands.footer.icon_url = message.author.displayAvatarURL();
+  commandsList.musicCommands.footer.text = message.author.tag;
+
   if (!args[0] || options.indexOf(args[0]) === -1) {
     message.author.send({embed: commandsList.socialCommands});
     message.author.send({embed: commandsList.modCommands});
     message.author.send({embed: commandsList.prefixCommands});
     message.author.send({embed: commandsList.welcomeCommands});
     message.author.send({embed: commandsList.logsCommands});
+    message.author.send({embed: commandsList.musicCommands});
   }
   else if (args[0] === "social") message.author.send({embed: commandsList.socialCommands});
   else if (args[0] === "mod") message.author.send({embed: commandsList.modCommands});
   else if (args[0] === "prefix") message.author.send({embed: commandsList.prefixCommands});
   else if (args[0] === "welcome") message.author.send({embed: commandsList.welcomeCommands});
+  else if (args[0] === "music") message.author.send({embed: commandsList.musicCommands});
   else message.author.send({embed: commandsList.logsCommands});
 }
 
@@ -372,6 +390,35 @@ function ban(message, args) {
   }
 }
 
+function nick(message, args) {
+  if (_hasPermission(message, permissionGroups.nickname)) {
+    if (_userHasPermission(message, userPermissionGroups.nickname)) {
+      let user = message.mentions.users.first();
+      if (user) {
+        let member = message.guild.member(user);
+        if (member) {
+          if (args.length > 1) {
+            let name = args.slice(1).join(' ');
+            member.setNickname(name).catch(function() {
+              message.channel.send("I could not change the nickname of the user.");
+            });
+          }
+          else {
+            member.setNickname(member.user.username).catch(function() {
+              message.channel.send("I could not reset the nickname of the user.");
+            });
+            message.channel.send("Reset the nickname for that user.");
+          }
+        }
+        else message.reply("that user isn't in this guild.");
+      }
+      else message.author.send(`Usage: ${getPrefix(message)}nick <user> [new_nickname]`);
+    }
+    else message.author.send("You are missing the permissions: " + userPermissionGroups.nickname);
+  }
+  else message.author.send("I am missing the permissions: " + permissionGroups.nickname);
+}
+
 function bulkdel(message, args) {
   if (_hasPermission(message, permissionGroups.manage)) {
     if (_userHasPermission(message, userPermissionGroups.admin)) {
@@ -402,8 +449,7 @@ function suggest(message, args, client) {
   if (args && args.length) {
     let suggestion = args.join(" ");
     let color = Math.ceil(Math.random() * 16777215);
-    let channel = client.channels.get(config.sugChannel);
-    channel.send({
+    client.channels.get(config.sugChannel).send({
       embed: {
         color: color,
         author: {
@@ -417,18 +463,23 @@ function suggest(message, args, client) {
           {
             name: "Suggestion",
             value: suggestion,
-            inline: true,
+            inline: true
           },
           {
             name: '\u200b',
             value: '\u200b',
-            inline: true,
+            inline: true
+          },
+          {
+            name: "Server",
+            value: message.guild.name,
+            inline: false
           },
           {
             name: '\u200b',
             value: '\u200b',
-            inline: false,
-          },
+            inline: false
+          }
         ],
         timestamp: new Date(),
         footer: {
@@ -661,13 +712,9 @@ function multiply(message, args) {
 
 function join(message) {
   if (_hasPermission(message, permissionGroups.join)) {
-    if (message.member.voiceChannel) {
-      if (!message.guild.me.voiceChannel) {
-        message.member.voiceChannel.join().then(function(connection) {
-          message.reply(`I have successfully connected to the channel.`);
-        }).catch(function(err) {
-          console.log(`Error in joining voice channel: ${err}`);
-        });
+    if (message.member.voice.channel) {
+      if (!message.guild.me.voice.channel) {
+        let connection = message.member.voice.channel.join();
       }
       else {
         message.reply(`I'm already in a voice channel! Use \`${getPrefix(message)}leave\` first.`);
@@ -684,13 +731,8 @@ function join(message) {
 
 function leave(message) {
   if (_hasPermission(message, permissionGroups.basic)) {
-    if (message.guild.me.voiceChannel) {
-      let id = message.guild.me.voiceChannelID;
-      let channel = message.guild.channels.find(ch => ch.id === id);
-      message.guild.me.voiceChannel.leave().catch(function(err) {
-        message.reply(`Something went wrong and I wasn't able to disconnect.`);
-        console.error(`Error in disconnecting from voice channel: ${err}`);
-      });
+    if (message.guild.me.voice.channel) {
+      message.guild.me.voice.channel.leave();
     }
     else {
       message.reply("I'm not in a voice channel!");
@@ -797,7 +839,7 @@ function logs(message, args) {
           setMessage(message);
           message.channel.send(`\`\`\`yaml\nChannel Logs: ${getStatus(message)[0]}\nMessage logs: ${getStatus(message)[1]}\nRole Logs: ${getStatus(message)[2]}\nLogs Channel: ${getStatus(message)[3]}\`\`\``);
         }
-        else if (args[1] && args[0] === "message" && args[1] === "enable") {
+        else if (args[1] && args[0] === "message" && args[1] === "disable") {
           disableMessage(message);
           message.channel.send(`\`\`\`yaml\nChannel Logs: ${getStatus(message)[0]}\nMessage logs: ${getStatus(message)[1]}\nRole Logs: ${getStatus(message)[2]}\nLogs Channel: ${getStatus(message)[3]}\`\`\``);
         }
