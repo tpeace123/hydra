@@ -259,23 +259,48 @@
         "inline": "false"
       },
       {
-        "name": "welcome set <channel_id>",
-        "value": "Set a welcome channel using a channel id.\nPass `default` as an argument to reset the channel to default.",
+        "name": "welcome status",
+        "value": "Get the status of welcome messages for this guild.",
         "inline": "false"
       },
       {
-        "name": "welcome get",
-        "value": "Get the current welcome channel in the guild",
+        "name": "welcome enable",
+        "value": "Enable join and leave messages for this guild.",
         "inline": "false"
       },
       {
         "name": "welcome disable",
-        "value": "Disable welcome messages for this guild",
+        "value": "Disable join and leave messages for this guild.",
         "inline": "false"
       },
       {
-        "name": "welcome reset",
-        "value": "Reset the welcome channel for the guild.\nDefault welcome channel is `welcomes` if I can find it in the guild.\nEnables welcome messages as well",
+        "name": "welcome join enable",
+        "value": "Enable join messages for this guild.",
+        "inline": "false"
+      },
+      {
+        "name": "welcome join disable",
+        "value": "Disable join messages for this guild.",
+        "inline": "false"
+      },
+      {
+        "name": "welcome join set <channel_id>",
+        "value": "Set the channel for join messages.\nEnables join messages as well.",
+        "inline": "false"
+      },
+      {
+        "name": "welcome leave enable",
+        "value": "Enable leave messages for this guild.",
+        "inline": "false"
+      },
+      {
+        "name": "welcome leave disable",
+        "value": "Disable leave messages for this guild.",
+        "inline": "false"
+      },
+      {
+        "name": "welcome leave set <channel_id>",
+        "value": "Set the leave message channel.\nEnables leave messages as well.",
         "inline": "false"
       },
       {

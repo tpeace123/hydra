@@ -1,11 +1,10 @@
 var config = require('./hydrauth.json');
-// var config = require('./auth.json');
+// var config = require('./auth.json'); // Alternate config file.
 /* config
 {
   "token": "<token>",
   "prefix": "<default prefix>",
   "sugChannel": "<suggestion channel>",
-  "welcome_channel": "<default welcome channel>",
   "server_link": "https://discord.gg/T8w7dJW",
   "dbl": {
     "invite": "https://top.gg/bot/543909504706674688",
@@ -18,19 +17,30 @@ var config = require('./hydrauth.json');
   }
 }
 */
+// Main require
 var Discord = require('discord.js');
 var client = new Discord.Client();
 var DBL = require('dblapi.js');
 var dbl = new DBL(config.dbl.token, client);
 var commands = require('./commands.js');
 var voiceCommands = require('./voiceCommands.js');
+
+// Prefix require
 var prefix = require('./prefix.js');
-var welChan = require('./welcome.js').getChannel;
-var welEnable = require('./welcome.js').getEnable;
+
+// Welcome require
+var welJoinChannel = require('./welcome.js').getJoinChannel;
+var welJoinEnabled = require('./welcome.js').getJoinEnable;
+var welLeaveChannel = require('./welcome.js').getLeaveChannel;
+var welLeaveEnabled = require('./welcome.js').getLeaveEnable;
+
+// Logs require
 var getChannel = require('./logs.js').getChannel;
 var getMessage = require('./logs.js').getMessage;
 var getRole = require('./logs.js').getRole;
 var getLogsChannel = require('./logs.js').getLogsChannel;
+
+var timeout = [''];
 
 client.login(config.token);
 
@@ -38,11 +48,13 @@ client.on('ready', _ready);
 
 client.on('message', _parseMessage);
 
-client.on('message', _parseVC);
+// client.on('message', _parseVC);
 
 client.on('guildCreate', _createGuild);
 
-client.on('guildMemberAdd', _addMemberToGuild);
+client.on('guildMemberAdd', _memberJoin);
+
+client.on('guildMemberRemove', _memberLeave);
 
 client.on('guildDelete', _deleteGuild);
 
@@ -61,8 +73,9 @@ client.on('roleDelete', _roleDelete);
 client.on('roleUpdate', _roleUpdate);
 
 function _ready() {
+  client.user.setActivity(`Poker on ${config.prefix}help with ${client.guilds.size} servers.`);
   _setActivity();
-  console.log(`\nConnected as ${client.user.tag} on ${_getServerCount()} servers`);
+  console.log(`\nConnected as ${client.user.tag}`);
   setInterval(function() {
     dbl.postStats(client.guilds.size);
   }, 1800000);
@@ -70,28 +83,24 @@ function _ready() {
 
 function _parseMessage(message) {
   if (message && (message.author === client.user || message.author.bot || !message.guild)) return;
-  else if (message && message.content && message.content.startsWith(prefix.getPrefix(message))) _processCommand(message);
+  else if (message && message.content && message.content.toLowerCase().startsWith(prefix.getPrefix(message))) _processCommand(message);
   else return;
 }
 
 async function _parseVC(message) {
   if (message && (message.author === client.user || message.author.bot || !message.guild)) return;
-  else if (message && message.content && message.content.startsWith(prefix.getPrefix())) _vcCommand(message);
+  else if (message && message.content && message.content.toLowerCase().startsWith(prefix.getPrefix())) _vcCommand(message);
   else return;
 }
 
-function _addMemberToGuild(member) {
-  // Check if welcome messages are enabled for the guild
-  if (welEnable(member.guild) === "false") return;
-  // Ignore if guild is DBL
-  if (member.guild.id === "264445053596991498") return;
-  let channel = welChan(member.guild);
-  if (channel === config.welcome_channel) {
-    channel = member.guild.channels.find(ch => ch.name === channel);
-  }
-  else channel = member.guild.channels.find(ch => ch.id === channel);
-  // If couldn't find channel, exit
+function _memberJoin(member) {
+  // Check if join messages are enabled or if guild is DBL
+  if (!welJoinEnabled || member.guild.id === '264445053596991498') return;
+  // Get channel
+  let channel = member.guild.channels.get(welJoinChannel(member.guild));
+  // Check if channel exists
   if (!channel) return;
+  // Send welcome embed
   channel.send({
     embed: {
       color: Math.ceil(Math.random() * 16777215),
@@ -99,7 +108,7 @@ function _addMemberToGuild(member) {
         name: client.user.tag,
         icon_url: client.user.displayAvatarURL(),
       },
-      title: "Member Welcome",
+      title: "Member Join",
       thumbnail: {
         url: member.user.displayAvatarURL(),
       },
@@ -112,13 +121,53 @@ function _addMemberToGuild(member) {
         {
           name: '\u200b',
           value: '\u200b',
-          inline: true,
+          inline: true
         },
       ],
       timestamp: new Date(),
       footer: {
-        icon_url: client.user.displayAvatarURL(),
-        text: member.tag
+        icon_url: member.guild.iconURL({dynamic: true}),
+        text: `${member.guild.name}`
+      }
+    }
+  });
+}
+
+function _memberLeave(member) {
+  // Check if leave messages are enabled or if guild is DBL
+  if (!welLeaveEnabled || member.guild.id === '264445053596991498') return;
+  // Get channel
+  let channel = member.guild.channels.get(welLeaveChannel(member.guild));
+  // Check if channel exists
+  if (!channel) return;
+  // Send leave embed
+  channel.send({
+    embed: {
+      color: Math.ceil(Math.random() * 16777215),
+      author: {
+        name: client.user.tag,
+        icon_url: client.user.displayAvatarURL()
+      },
+      title: 'Member Leave',
+      thumbnail: {
+        url: member.user.displayAvatarURL()
+      },
+      fields: [
+        {
+          name: 'Username',
+          value: `${member.user.tag}`,
+          inline: true
+        },
+        {
+          name: '\u200b',
+          value: '\u200b',
+          inline: true
+        }
+      ],
+      timestamp: new Date(),
+      footer: {
+        icon_url: member.guild.iconURL({dynamic: true}),
+        text: `${member.guild.name}`
       }
     }
   });
@@ -388,7 +437,7 @@ function _roleUpdate(oldRole, newRole) {
 }
 
 function _processCommand(message) {
-  let command = message.content.substr(prefix.getPrefix(message).length);
+  let command = message.content.toLowerCase().substr(prefix.getPrefix(message).length);
   let commandArray = command.split(' ');
   if (!commandArray.length) return;
   if (commands.hasOwnProperty(commandArray[0])) {
@@ -398,7 +447,7 @@ function _processCommand(message) {
 }
 
 async function _vcCommand(message) {
-  let command = message.content.substr(prefix.getPrefix(message).length);
+  let command = message.content.toLowerCase().substr(prefix.getPrefix(message).length);
   let commandArray = command.split(' ');
   if (!commandArray.length) return;
   if (voiceCommands.hasOwnProperty(commandArray[0])) {
@@ -407,9 +456,31 @@ async function _vcCommand(message) {
 }
 
 function _setActivity() {
-  client.user.setActivity(`Poker. ${config.prefix}help with ${_getServerCount()} servers`, {type: "WATCHING"});
-}
-
-function _getServerCount() {
-  return client.guilds.size;
+  clearInterval(timeout[0]);
+  let activity = {
+    0: `Poker. ${config.prefix}help with ${client.guilds.size} servers`,
+    1: `my ${client.guilds.size} servers. ${config.prefix}help for fun`,
+    2: `the ${config.prefix}help of ${client.guilds.size} guilds`,
+    3: `Esports with ${client.guilds.size} on ${config.prefix}help`
+  }
+  let activityType = {
+    0: "WATCHING",
+    1: "WATCHING",
+    2: "LISTENING",
+    3: "WATCHING"
+  }
+  /**
+   * Activity:
+   *   The activity (presence) of the bot
+   * 
+   * Activity Type:
+   *   The type of activty from one of the three:
+   *     PLAYING
+   *     WATCHING
+   *     LISTENING
+   */
+  timeout[0] = setInterval(function() {
+    let num = Math.floor(Math.random() * Object.keys(activity).length);
+    client.user.setActivity(activity[num], {type: activityType[num]});
+  }, 1800000);
 }
