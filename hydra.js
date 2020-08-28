@@ -1,4 +1,4 @@
-var config = require('./hydrauth.json');
+var config = require('./hydrauth.json'); // Main config file.
 // var config = require('./auth.json'); // Alternate config file.
 /* config
 {
@@ -17,13 +17,13 @@ var config = require('./hydrauth.json');
   }
 }
 */
-// Main require
+
 var Discord = require('discord.js');
 var client = new Discord.Client();
 var DBL = require('dblapi.js');
 var dbl = new DBL(config.dbl.token, client);
 var commands = require('./commands.js');
-var voiceCommands = require('./voiceCommands.js');
+// var voiceCommands = require('./voiceCommands.js');
 
 // Prefix require
 var prefix = require('./prefix.js');
@@ -35,10 +35,10 @@ var welLeaveChannel = require('./welcome.js').getLeaveChannel;
 var welLeaveEnabled = require('./welcome.js').getLeaveEnable;
 
 // Logs require
-var getChannel = require('./logs.js').getChannel;
-var getMessage = require('./logs.js').getMessage;
-var getRole = require('./logs.js').getRole;
-var getLogsChannel = require('./logs.js').getLogsChannel;
+// var getChannel = require('./logs.js').getChannel;
+// var getMessage = require('./logs.js').getMessage;
+// var getRole = require('./logs.js').getRole;
+// var getLogsChannel = require('./logs.js').getLogsChannel;
 
 var timeout = [''];
 
@@ -58,24 +58,24 @@ client.on('guildMemberRemove', _memberLeave);
 
 client.on('guildDelete', _deleteGuild);
 
-client.on('channelCreate', _channelCreate);
+// client.on('channelCreate', _channelCreate);
 
-client.on('channelDelete', _channelDelete);
+// client.on('channelDelete', _channelDelete);
 
-client.on('messageDelete', _messageDelete);
+// client.on('messageDelete', _messageDelete);
 
-client.on('messageDeleteBulk', _messageBulkDel);
+// client.on('messageDeleteBulk', _messageBulkDel);
 
-// client.on('roleCreate', _roleCreate);
+// // client.on('roleCreate', _roleCreate);
 
-client.on('roleDelete', _roleDelete);
+// client.on('roleDelete', _roleDelete);
 
-client.on('roleUpdate', _roleUpdate);
+// client.on('roleUpdate', _roleUpdate);
 
 function _ready() {
-  client.user.setActivity(`Poker on ${config.prefix}help with ${client.guilds.size} servers.`);
-  _setActivity();
   console.log(`\nConnected as ${client.user.tag}`);
+  _setFirstActivity();
+  _setActivity();
   setInterval(function() {
     dbl.postStats(client.guilds.size);
   }, 1800000);
@@ -93,11 +93,15 @@ async function _parseVC(message) {
   else return;
 }
 
+async function _setFirstActivity() {
+  await client.user.setActivity(`Poker on ${config.prefix}help with ${client.guilds.cache.size} servers.`);
+}
+
 function _memberJoin(member) {
   // Check if join messages are enabled or if guild is DBL
-  if (!welJoinEnabled || member.guild.id === '264445053596991498') return;
+  if (!welJoinEnabled(member.guild) || member.guild.id === '264445053596991498') return;
   // Get channel
-  let channel = member.guild.channels.get(welJoinChannel(member.guild));
+  let channel = member.guild.channels.cache.get(welJoinChannel(member.guild));
   // Check if channel exists
   if (!channel) return;
   // Send welcome embed
@@ -135,9 +139,9 @@ function _memberJoin(member) {
 
 function _memberLeave(member) {
   // Check if leave messages are enabled or if guild is DBL
-  if (!welLeaveEnabled || member.guild.id === '264445053596991498') return;
+  if (!welLeaveEnabled(member.guild) || member.guild.id === '264445053596991498') return;
   // Get channel
-  let channel = member.guild.channels.get(welLeaveChannel(member.guild));
+  let channel = member.guild.channels.cache.get(welLeaveChannel(member.guild));
   // Check if channel exists
   if (!channel) return;
   // Send leave embed
@@ -174,18 +178,62 @@ function _memberLeave(member) {
 }
 
 function _createGuild(guild) {
+  _setFirstActivity();
   _setActivity();
-  let sent = false;
-  guild.channels.forEach(function(channel) {
-    if (channel.type === 'text' && sent === false) {
-      channel.send(`Thank you for inviting me to \`${guild.name}\`!\nMy default prefix is \`${config.prefix}\`\nTo access the commands list, use \`commands\`\nI have features like welcome message, moderator function, and social commands!\n\nMy support server link is \`${config.server_link}\`. Join this for bot updates, suggestions, and socializing.\nIf you would like to invite me to other servers, go to my DBL page at \`${config.invite_link}\``);
-      sent = true;
-    }
-  });
+  // let sent = false;
+  // guild.channels.cache.forEach(function(channel) {
+  //   if (channel.type === 'text' && sent === false) {
+  //     channel.send(`Thank you for inviting me to \`${guild.name}\`!\nMy default prefix is \`${config.prefix}\`\nTo access the commands list, use \`commands\`\nI have features like welcome message, moderator function, and social commands!\n\nMy support server link is \`${config.server_link}\`. Join this for bot updates, suggestions, and socializing.\nIf you would like to invite me to other servers, go to my DBL page at \`${config.invite_link}\``);
+  //     sent = true;
+  //   }
+  // });
 }
 
 function _deleteGuild() {
+  _setFirstActivity();
   _setActivity();
+}
+
+function _setActivity() {
+  clearInterval(timeout[0]);
+  let activity = {
+    0: `Poker. ${config.prefix}help with ${client.guilds.cache.size} servers`,
+    1: `my ${client.guilds.cache.size} servers. ${config.prefix}help for fun`,
+    2: `the ${config.prefix}help of ${client.guilds.cache.size} guilds`,
+    3: `Esports with ${client.guilds.cache.size} guilds on ${config.prefix}help`,
+    4: `Games with ${client.guilds.cache.size} servers.`
+  }
+  let activityType = {
+    0: "WATCHING",
+    1: "WATCHING",
+    2: "LISTENING",
+    3: "WATCHING",
+    4: "PLAYING"
+  }
+  /**
+   * Activity:
+   *   The activity (presence) of the bot
+   * 
+   * Activity Type:
+   *   The type of activity from one of the three:
+   *     PLAYING
+   *     WATCHING
+   *     LISTENING
+   */
+  timeout[0] = setInterval(function() {
+    let num = Math.floor(Math.random() * Object.keys(activity).length);
+    client.user.setActivity(activity[num], {type: activityType[num]});
+  }, 1800000);
+}
+
+function _processCommand(message) {
+  let command = message.content.toLowerCase().substr(prefix.getPrefix(message).length);
+  let commandArray = command.split(' ');
+  if (!commandArray.length) return;
+  if (commands.hasOwnProperty(commandArray[0])) {
+    commands[commandArray[0]](message, commandArray.slice(1), client);
+  }
+  else return;
 }
 
 function _channelCreate(channel) {
@@ -434,53 +482,4 @@ function _roleUpdate(oldRole, newRole) {
       timestamp: new Date()
     }
   });
-}
-
-function _processCommand(message) {
-  let command = message.content.toLowerCase().substr(prefix.getPrefix(message).length);
-  let commandArray = command.split(' ');
-  if (!commandArray.length) return;
-  if (commands.hasOwnProperty(commandArray[0])) {
-    commands[commandArray[0]](message, commandArray.slice(1), client);
-  }
-  else return;
-}
-
-async function _vcCommand(message) {
-  let command = message.content.toLowerCase().substr(prefix.getPrefix(message).length);
-  let commandArray = command.split(' ');
-  if (!commandArray.length) return;
-  if (voiceCommands.hasOwnProperty(commandArray[0])) {
-    voiceCommands.voice(message, commandArray[0], commandArray.slice(1));
-  }
-}
-
-function _setActivity() {
-  clearInterval(timeout[0]);
-  let activity = {
-    0: `Poker. ${config.prefix}help with ${client.guilds.size} servers`,
-    1: `my ${client.guilds.size} servers. ${config.prefix}help for fun`,
-    2: `the ${config.prefix}help of ${client.guilds.size} guilds`,
-    3: `Esports with ${client.guilds.size} on ${config.prefix}help`
-  }
-  let activityType = {
-    0: "WATCHING",
-    1: "WATCHING",
-    2: "LISTENING",
-    3: "WATCHING"
-  }
-  /**
-   * Activity:
-   *   The activity (presence) of the bot
-   * 
-   * Activity Type:
-   *   The type of activty from one of the three:
-   *     PLAYING
-   *     WATCHING
-   *     LISTENING
-   */
-  timeout[0] = setInterval(function() {
-    let num = Math.floor(Math.random() * Object.keys(activity).length);
-    client.user.setActivity(activity[num], {type: activityType[num]});
-  }, 1800000);
 }

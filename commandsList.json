@@ -32,6 +32,11 @@
         "inline": "false"
       },
       {
+        "name": "info",
+        "value": "The information of Hydra.",
+        "inline": "false"
+      },
+      {
         "name": "hmw <arguments>",
         "value": "Ask for help from me",
         "inline": "false"
@@ -102,6 +107,16 @@
         "inline": "false"
       },
       {
+        "name": "remind <time> <reminder>",
+        "value": "Set a reminder. Use a number for time. Add S or H directly after the number to indicate seconds or hours. Default is minutes.",
+        "inline": "false"
+      },
+      {
+        "name": "rpc <choice> [difficulty]",
+        "value": "Play rock paper scissor. Indicate easy, medium, or hard for the difficulty.",
+        "inline": "false"
+      },
+      {
         "name": "suggest",
         "value": "Suggest a suggestion for me to have. All suggestions go to the support server.",
         "inline": "false"
@@ -120,16 +135,6 @@
         "name": "<> = required field",
         "value": "\u200b",
         "inline": "true"
-      },
-      {
-        "name": "Bot Owner",
-        "value": "",
-        "inline": "false"
-      },
-      {
-        "name": "Bot Developer",
-        "value": "",
-        "inline": "false"
       }
     ],
     "timestamp": "",
@@ -197,7 +202,8 @@
       },
       {
         "name": "logs role enable/disable",
-        "value": "Enable or disable role logs"
+        "value": "Enable or disable role logs",
+        "inline": "false"
       },
       {
         "name": "\u200b",
@@ -213,16 +219,6 @@
         "name": "<> = required field",
         "value": "\u200b",
         "inline": "true"
-      },
-      {
-        "name": "Bot Owner",
-        "value": "",
-        "inline": "false"
-      },
-      {
-        "name": "Bot Developer",
-        "value": "",
-        "inline": "false"
       }
     ],
     "timestamp": "",
@@ -317,16 +313,6 @@
         "name": "<> = required field",
         "value": "\u200b",
         "inline": "true"
-      },
-      {
-        "name": "Bot Owner",
-        "value": "",
-        "inline": "false"
-      },
-      {
-        "name": "Bot Developer",
-        "value": "",
-        "inline": "false"
       }
     ],
     "timestamp": "",
@@ -391,16 +377,6 @@
         "name": "<> = required field",
         "value": "\u200b",
         "inline": "true"
-      },
-      {
-        "name": "Bot Owner",
-        "value": "",
-        "inline": "false"
-      },
-      {
-        "name": "Bot Developer",
-        "value": "",
-        "inline": "false"
       }
     ],
     "timestamp": "",
@@ -460,16 +436,6 @@
         "name": "<> = required field",
         "value": "\u200b",
         "inline": "true"
-      },
-      {
-        "name": "Bot Owner",
-        "value": "",
-        "inline": "false"
-      },
-      {
-        "name": "Bot Developer",
-        "value": "",
-        "inline": "false"
       }
     ],
     "timestamp": "",
@@ -534,16 +500,6 @@
         "name": "[] = optional field",
         "value": "\u200b",
         "inline": "true"
-      },
-      {
-        "name": "Bot Owner",
-        "value": "",
-        "inline": "false"
-      },
-      {
-        "name": "Bot Developer",
-        "value": "",
-        "inline": "false"
       }
     ],
     "timestamp": "",
