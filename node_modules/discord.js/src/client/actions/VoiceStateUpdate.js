@@ -1,23 +1,23 @@
 'use strict';
 
 const Action = require('./Action');
-const { Events } = require('../../util/Constants');
 const VoiceState = require('../../structures/VoiceState');
+const { Events } = require('../../util/Constants');
 
 class VoiceStateUpdate extends Action {
   handle(data) {
     const client = this.client;
-    const guild = client.guilds.get(data.guild_id);
+    const guild = client.guilds.cache.get(data.guild_id);
     if (guild) {
       // Update the state
-      const oldState = guild.voiceStates.has(data.user_id) ?
-        guild.voiceStates.get(data.user_id)._clone() :
-        new VoiceState(guild, { user_id: data.user_id });
+      const oldState = guild.voiceStates.cache.has(data.user_id)
+        ? guild.voiceStates.cache.get(data.user_id)._clone()
+        : new VoiceState(guild, { user_id: data.user_id });
 
       const newState = guild.voiceStates.add(data);
 
       // Get the member
-      let member = guild.members.get(data.user_id);
+      let member = guild.members.cache.get(data.user_id);
       if (member && data.member) {
         member._patch(data.member);
       } else if (data.member && data.member.user && data.member.joined_at) {
@@ -40,6 +40,5 @@ class VoiceStateUpdate extends Action {
     }
   }
 }
-
 
 module.exports = VoiceStateUpdate;

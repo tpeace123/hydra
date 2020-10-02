@@ -23,47 +23,75 @@ class GenericAction {
     return data;
   }
 
-  getPayload(data, store, id, partialType, cache) {
-    const existing = store.get(id);
+  getPayload(data, manager, id, partialType, cache) {
+    const existing = manager.cache.get(id);
     if (!existing && this.client.options.partials.includes(partialType)) {
-      return store.add(data, cache);
+      return manager.add(data, cache);
     }
     return existing;
   }
 
   getChannel(data) {
     const id = data.channel_id || data.id;
-    return data.channel || this.getPayload({
-      id,
-      guild_id: data.guild_id,
-    }, this.client.channels, id, PartialTypes.CHANNEL);
+    return (
+      data.channel ||
+      this.getPayload(
+        {
+          id,
+          guild_id: data.guild_id,
+          recipients: [data.author || { id: data.user_id }],
+        },
+        this.client.channels,
+        id,
+        PartialTypes.CHANNEL,
+      )
+    );
   }
 
   getMessage(data, channel, cache) {
     const id = data.message_id || data.id;
-    return data.message || this.getPayload({
-      id,
-      channel_id: channel.id,
-      guild_id: data.guild_id || (channel.guild ? channel.guild.id : null),
-    }, channel.messages, id, PartialTypes.MESSAGE, cache);
+    return (
+      data.message ||
+      this.getPayload(
+        {
+          id,
+          channel_id: channel.id,
+          guild_id: data.guild_id || (channel.guild ? channel.guild.id : null),
+        },
+        channel.messages,
+        id,
+        PartialTypes.MESSAGE,
+        cache,
+      )
+    );
   }
 
   getReaction(data, message, user) {
     const id = data.emoji.id || decodeURIComponent(data.emoji.name);
-    return this.getPayload({
-      emoji: data.emoji,
-      count: 0,
-      me: user.id === this.client.user.id,
-    }, message.reactions, id, PartialTypes.MESSAGE);
+    return this.getPayload(
+      {
+        emoji: data.emoji,
+        count: message.partial ? null : 0,
+        me: user ? user.id === this.client.user.id : false,
+      },
+      message.reactions,
+      id,
+      PartialTypes.REACTION,
+    );
   }
 
   getMember(data, guild) {
     const id = data.user.id;
-    return this.getPayload({
-      user: {
-        id,
+    return this.getPayload(
+      {
+        user: {
+          id,
+        },
       },
-    }, guild.members, id, PartialTypes.GUILD_MEMBER);
+      guild.members,
+      id,
+      PartialTypes.GUILD_MEMBER,
+    );
   }
 
   getUser(data) {

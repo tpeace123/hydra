@@ -2,8 +2,11 @@
 
 const DiscordAPIError = require('./DiscordAPIError');
 const HTTPError = require('./HTTPError');
+const {
+  Events: { RATE_LIMIT },
+  browser,
+} = require('../util/Constants');
 const Util = require('../util/Util');
-const { Events: { RATE_LIMIT }, browser } = require('../util/Constants');
 
 function parseResponse(res) {
   if (res.headers.get('content-type').startsWith('application/json')) return res.json();
@@ -45,14 +48,13 @@ class RequestHandler {
   }
 
   get limited() {
-    return (this.manager.globalTimeout || this.remaining <= 0) && Date.now() < this.reset;
+    return Boolean(this.manager.globalTimeout) || (this.remaining <= 0 && Date.now() < this.reset);
   }
 
   get _inactive() {
     return this.queue.length === 0 && !this.limited && this.busy !== true;
   }
 
-  /* eslint-disable-next-line complexity */
   async execute(item) {
     // Insert item back to the beginning if currently busy
     if (this.busy) {
@@ -102,9 +104,7 @@ class RequestHandler {
     } catch (error) {
       // NodeFetch error expected for all "operational" errors, such as 500 status code
       this.busy = false;
-      return reject(
-        new HTTPError(error.message, error.constructor.name, error.status, request.method, request.path)
-      );
+      return reject(new HTTPError(error.message, error.constructor.name, error.status, request.method, request.path));
     }
 
     if (res && res.headers) {
@@ -155,7 +155,7 @@ class RequestHandler {
       // Retry the specified number of times for possible serverside issues
       if (item.retries === this.manager.client.options.retryLimit) {
         return reject(
-          new HTTPError(res.statusText, res.constructor.name, res.status, item.request.method, request.path)
+          new HTTPError(res.statusText, res.constructor.name, res.status, item.request.method, request.path),
         );
       } else {
         item.retries++;
@@ -171,9 +171,7 @@ class RequestHandler {
         }
         return null;
       } catch (err) {
-        return reject(
-          new HTTPError(err.message, err.constructor.name, err.status, request.method, request.path)
-        );
+        return reject(new HTTPError(err.message, err.constructor.name, err.status, request.method, request.path));
       }
     }
   }

@@ -7,7 +7,7 @@ class GuildUpdateAction extends Action {
   handle(data) {
     const client = this.client;
 
-    const guild = client.guilds.get(data.id);
+    const guild = client.guilds.cache.get(data.id);
     if (guild) {
       const old = guild._update(data);
       /**
@@ -29,6 +29,5 @@ class GuildUpdateAction extends Action {
     };
   }
 }
-
 
 module.exports = GuildUpdateAction;

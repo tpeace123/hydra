@@ -12,13 +12,13 @@ class GuildDeleteAction extends Action {
   handle(data) {
     const client = this.client;
 
-    let guild = client.guilds.get(data.id);
+    let guild = client.guilds.cache.get(data.id);
     if (guild) {
-      for (const channel of guild.channels.values()) {
+      for (const channel of guild.channels.cache.values()) {
         if (channel.type === 'text') channel.stopTyping(true);
       }
 
-      if (guild.available && data.unavailable) {
+      if (data.unavailable) {
         // Guild is unavailable
         guild.available = false;
 
@@ -36,11 +36,11 @@ class GuildDeleteAction extends Action {
         };
       }
 
-      for (const channel of guild.channels.values()) this.client.channels.remove(channel.id);
+      for (const channel of guild.channels.cache.values()) this.client.channels.remove(channel.id);
       if (guild.voice && guild.voice.connection) guild.voice.connection.disconnect();
 
       // Delete guild
-      client.guilds.remove(guild.id);
+      client.guilds.cache.delete(guild.id);
       guild.deleted = true;
 
       /**

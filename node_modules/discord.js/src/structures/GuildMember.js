@@ -1,13 +1,13 @@
 'use strict';
 
-const TextBasedChannel = require('./interfaces/TextBasedChannel');
-const Role = require('./Role');
-const Permissions = require('../util/Permissions');
-const GuildMemberRoleStore = require('../stores/GuildMemberRoleStore');
 const Base = require('./Base');
-const VoiceState = require('./VoiceState');
 const { Presence } = require('./Presence');
+const Role = require('./Role');
+const VoiceState = require('./VoiceState');
+const TextBasedChannel = require('./interfaces/TextBasedChannel');
 const { Error } = require('../errors');
+const GuildMemberRoleManager = require('../managers/GuildMemberRoleManager');
+const Permissions = require('../util/Permissions');
 
 /**
  * Represents a member of a guild on Discord.
@@ -101,12 +101,12 @@ class GuildMember extends Base {
   }
 
   /**
-   * A collection of roles that are applied to this member, mapped by the role ID
-   * @type {GuildMemberRoleStore<Snowflake, Role>}
+   * A manager for the roles belonging to this member
+   * @type {GuildMemberRoleManager}
    * @readonly
    */
   get roles() {
-    return new GuildMemberRoleStore(this);
+    return new GuildMemberRoleManager(this);
   }
 
   /**
@@ -115,8 +115,8 @@ class GuildMember extends Base {
    * @readonly
    */
   get lastMessage() {
-    const channel = this.guild.channels.get(this.lastMessageChannelID);
-    return (channel && channel.messages.get(this.lastMessageID)) || null;
+    const channel = this.guild.channels.cache.get(this.lastMessageChannelID);
+    return (channel && channel.messages.cache.get(this.lastMessageID)) || null;
   }
 
   /**
@@ -125,7 +125,7 @@ class GuildMember extends Base {
    * @readonly
    */
   get voice() {
-    return this.guild.voiceStates.get(this.id) || new VoiceState(this.guild, { user_id: this.id });
+    return this.guild.voiceStates.cache.get(this.id) || new VoiceState(this.guild, { user_id: this.id });
   }
 
   /**
@@ -152,12 +152,15 @@ class GuildMember extends Base {
    * @readonly
    */
   get presence() {
-    return this.guild.presences.get(this.id) || new Presence(this.client, {
-      user: {
-        id: this.id,
-      },
-      guild: this.guild,
-    });
+    return (
+      this.guild.presences.cache.get(this.id) ||
+      new Presence(this.client, {
+        user: {
+          id: this.id,
+        },
+        guild: this.guild,
+      })
+    );
   }
 
   /**
@@ -205,17 +208,19 @@ class GuildMember extends Base {
    */
   get permissions() {
     if (this.user.id === this.guild.ownerID) return new Permissions(Permissions.ALL).freeze();
-    return new Permissions(this.roles.map(role => role.permissions)).freeze();
+    return new Permissions(this.roles.cache.map(role => role.permissions)).freeze();
   }
 
   /**
-   * Whether this member is manageable in terms of role hierarchy by the client user
+   * Whether the client user is above this user in the hierarchy, according to role position and guild ownership.
+   * This is a prerequisite for many moderative actions.
    * @type {boolean}
    * @readonly
    */
   get manageable() {
     if (this.user.id === this.guild.ownerID) return false;
     if (this.user.id === this.client.user.id) return false;
+    if (this.client.user.id === this.guild.ownerID) return true;
     if (!this.guild.me) throw new Error('GUILD_UNCACHED_ME');
     return this.guild.me.roles.highest.comparePositionTo(this.roles.highest) > 0;
   }
@@ -260,7 +265,7 @@ class GuildMember extends Base {
    */
   hasPermission(permission, { checkAdmin = true, checkOwner = true } = {}) {
     if (checkOwner && this.user.id === this.guild.ownerID) return true;
-    return this.roles.some(r => r.permissions.has(permission, checkAdmin));
+    return this.roles.cache.some(r => r.permissions.has(permission, checkAdmin));
   }
 
   /**
@@ -292,7 +297,7 @@ class GuildMember extends Base {
       data.channel_id = null;
       data.channel = undefined;
     }
-    if (data.roles) data.roles = data.roles.map(role => role instanceof Role ? role.id : role);
+    if (data.roles) data.roles = data.roles.map(role => (role instanceof Role ? role.id : role));
     let endpoint = this.client.api.guilds(this.guild.id);
     if (this.user.id === this.client.user.id) {
       const keys = Object.keys(data);
@@ -341,7 +346,10 @@ class GuildMember extends Base {
    * @returns {Promise<GuildMember>}
    */
   kick(reason) {
-    return this.client.api.guilds(this.guild.id).members(this.user.id).delete({ reason })
+    return this.client.api
+      .guilds(this.guild.id)
+      .members(this.user.id)
+      .delete({ reason })
       .then(() => this);
   }
 

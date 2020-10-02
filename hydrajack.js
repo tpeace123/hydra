@@ -186,7 +186,7 @@ function blackjack(message, client) {
     }
 
     function _awaitMessages() {
-      let collector = message.channel.createMessageCollector(filter, {time: 10000, max: 1, maxMatches: 1});
+      let collector = message.channel.createMessageCollector(filter, {time: 20000, max: 1, maxMatches: 1});
       collector.on('collect', function(m) {
         collector.stop();
         _player(m.content.toLowerCase());
@@ -288,7 +288,7 @@ function blackjack(message, client) {
             },
             {
               name: `Type \`hit\` for hit`,
-              value: 'You have 10 seconds to reply',
+              value: 'You have 20 seconds to reply',
               inline: true,
             },
             {

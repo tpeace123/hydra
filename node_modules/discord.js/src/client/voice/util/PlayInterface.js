@@ -51,7 +51,7 @@ class PlayInterface {
    * connection.play(ytdl('https://www.youtube.com/watch?v=ZlAU_w7-Xp8', { quality: 'highestaudio' }));
    * @example
    * // Play a voice broadcast
-   * const broadcast = client.createVoiceBroadcast();
+   * const broadcast = client.voice.createBroadcast();
    * broadcast.play('/home/hydrabolt/audio.mp3');
    * connection.play(broadcast);
    * @example
@@ -60,7 +60,8 @@ class PlayInterface {
    * @returns {StreamDispatcher}
    */
   play(resource, options = {}) {
-    if (resource instanceof Broadcast) {
+    const VoiceBroadcast = require('../VoiceBroadcast');
+    if (resource instanceof VoiceBroadcast) {
       if (!this.player.playBroadcast) throw new Error('VOICE_PLAY_INTERFACE_NO_BROADCAST');
       return this.player.playBroadcast(resource, options);
     }
@@ -85,12 +86,9 @@ class PlayInterface {
 
   static applyToClass(structure) {
     for (const prop of ['play']) {
-      Object.defineProperty(structure.prototype, prop,
-        Object.getOwnPropertyDescriptor(PlayInterface.prototype, prop));
+      Object.defineProperty(structure.prototype, prop, Object.getOwnPropertyDescriptor(PlayInterface.prototype, prop));
     }
   }
 }
 
 module.exports = PlayInterface;
-
-const Broadcast = require('../VoiceBroadcast');

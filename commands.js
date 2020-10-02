@@ -25,20 +25,21 @@ var welGetLeaveChannel = require('./welcome.js').getLeaveChannel;
 // Blackjack require
 var blackjack = require('./hydrajack.js').blackjack;
 
+// Tictactoe require
+var tictactoe = require('./tictactoe.js').tictactoe;
+
 // Logs require
-// var getChannel = require('./logs.js').getChannel;
-// var setChannel = require('./logs.js').setChannel;
-// var disableChannel = require('./logs.js').disableChannel;
-// var getMessage = require('./logs.js').getMessage;
-// var setMessage = require('./logs.js').setMessage;
-// var disableMessage = require('./logs.js').disableMessage;
-// var getRole = require('./logs.js').getRole;
-// var setRole = require('./logs.js').setRole;
-// var disableRole = require('./logs.js').disableRole;
-// var getLogsChannel = require('./logs.js').getLogsChannel;
-// var setLogsChannel = require('./logs.js').setLogsChannel;
-// var disableLogs = require('./logs.js').disableLogs;
-// var getStatus = require('./logs.js').getStatus;
+var logStatus = require('./logs.js').getStatus;
+var setLogsChannel = require('./logs.js').setLogsChannel;
+var clearLogsChannel = require('./logs.js').clearLogsChannel;
+var enableUser = require('./logs.js').enableUser;
+var disableUser = require('./logs.js').disableUser;
+var enableRole = require('./logs.js').enableRole;
+var disableRole = require('./logs.js').disableRole;
+var enableMessage = require('./logs.js').enableMessage;
+var disableMessage = require('./logs.js').disableMessage;
+var enableChannel = require('./logs.js').enableChannel;
+var disableChannel = require('./logs.js').disableChannel;
 
 module.exports = {
   hmw: hmw,
@@ -67,7 +68,9 @@ module.exports = {
   blackjack: jack,
   info: info,
   remind: remind,
-  rpc: rpc
+  rps: rps,
+  tictactoe: tictac,
+  logs: logs
 }
 
 const permissionGroups = {
@@ -175,15 +178,15 @@ async function commands(message, args, client) {
   commandsList.modCommands.footer.icon_url = message.author.displayAvatarURL();
   commandsList.modCommands.footer.text = message.author.tag;
 
-  // commandsList.logsCommands.color = color;
-  // commandsList.logsCommands.author.name = client.user.tag;
-  // commandsList.logsCommands.author.icon_url = client.user.displayAvatarURL();
-  // commandsList.logsCommands.thumbnail.url = client.user.displayAvatarURL();
-  // commandsList.logsCommands.fields[0].value = config.prefix;
-  // commandsList.logsCommands.fields[1].value = getPrefix(message);
-  // commandsList.logsCommands.timestamp = new Date();
-  // commandsList.logsCommands.footer.icon_url = message.author.displayAvatarURL();
-  // commandsList.logsCommands.footer.text = message.author.tag;
+  commandsList.logsCommands.color = color;
+  commandsList.logsCommands.author.name = client.user.tag;
+  commandsList.logsCommands.author.icon_url = client.user.displayAvatarURL();
+  commandsList.logsCommands.thumbnail.url = client.user.displayAvatarURL();
+  commandsList.logsCommands.fields[0].value = config.prefix;
+  commandsList.logsCommands.fields[1].value = getPrefix(message);
+  commandsList.logsCommands.timestamp = new Date();
+  commandsList.logsCommands.footer.icon_url = message.author.displayAvatarURL();
+  commandsList.logsCommands.footer.text = message.author.tag;
 
   commandsList.welcomeCommands.color = color;
   commandsList.welcomeCommands.author.name = client.user.tag;
@@ -220,7 +223,8 @@ async function commands(message, args, client) {
     case "mod": message.author.send({embed: commandsList.modCommands}); break;
     case "prefix": message.author.send({embed: commandsList.prefixCommands}); break;
     case "welcome": message.author.send({embed: commandsList.welcomeCommands}); break;
-    default: await message.author.send({embed: commandsList.socialCommands}); await message.author.send({embed: commandsList.modCommands}); await message.author.send({embed: commandsList.prefixCommands}); await message.author.send({embed: commandsList.welcomeCommands});
+    case "logs": message.author.send({embed: commandsList.logsCommands}); break;
+    default: await message.author.send({embed: commandsList.socialCommands}); await message.author.send({embed: commandsList.modCommands}); await message.author.send({embed: commandsList.logsCommands}); await message.author.send({embed: commandsList.prefixCommands}); await message.author.send({embed: commandsList.welcomeCommands});
   }
 }
 
@@ -251,6 +255,16 @@ async function info(message, args, client) {
         {
           name: "Bot Developer",
           value: client.users.cache.get(config.userids.dev).tag,
+          inline: false
+        },
+        {
+          name: "Server Count",
+          value: client.guilds.cache.size,
+          inline: false
+        },
+        {
+          name: "Verification date",
+          value: "September 11, 2020",
           inline: false
         }
       ],
@@ -304,11 +318,11 @@ function links(message, args, client) {
         },
         {
           name: "Discord Terms of Service",
-          value: "https://discordapp.com/terms",
+          value: "https://discord.com/terms",
         },
         {
           name: "Discord Privacy Policy",
-          value: "https://discordapp.com/privacy",
+          value: "https://discord.com/privacy",
           inline: false,
         },
       ],
@@ -372,7 +386,7 @@ async function bulkdel(message, args) {
     if (_userHasPermission(message, userPermissionGroups.admin)) {
       if ((args && args.length) && !isNaN(args[0])) {
         await message.channel.bulkDelete(args[0]).catch(function(err) {
-          message.author.send("I was unable to delete messages in the channel.\nMake sure that I am not bulk deleting more than 100 messages and messages over 14 days old.");
+          message.author.send("I was unable to delete messages in the channel.\nMake sure that I am not deleting more than 100 messages and messages over 14 days old.");
         });
       }
       else message.author.send(`Usage: ${getPrefix(message)}bulkdel <number_of_messages_1-100>`);
@@ -382,9 +396,9 @@ async function bulkdel(message, args) {
   else message.author.send("I am missing the permissions: " + permissionGroups.manage);
 }
 
-function suggest(message, args, client) {
+async function suggest(message, args, client) {
   if (args && args.length) {
-    client.channels.get(config.sugChannel).send({
+    client.channels.cache.get(config.sugChannel).send({
       embed: {
         color: Math.ceil(Math.random() * 16777215),
         author: {
@@ -404,7 +418,7 @@ function suggest(message, args, client) {
             name: '\u200b',
             value: '\u200b',
             inline: true
-          },
+          }/*,
           {
             name: "Server",
             value: message.guild.name,
@@ -414,13 +428,17 @@ function suggest(message, args, client) {
             name: '\u200b',
             value: '\u200b',
             inline: false
-          }
+          }*/
         ],
         timestamp: new Date(),
         footer: {
           icon_url: client.user.displayAvatarURL(),
           text: client.user.tag
         }
+      }
+    }).then(function() {
+      if (_hasPermission(message, permissionGroups.basic)) {
+        message.channel.send(`Suggestion \`${args.join(" ")}\` sent.`);
       }
     });
   }
@@ -450,13 +468,13 @@ function invite(message, args, client) {
             inline: false,
           },
           {
-            name: "My support server",
-            value: `${config.server_link}\nView this for bot updates and socializing.`,
+            name: "Support Server",
+            value: `[Join](${config.server_link}) for bot updates and socializing.`,
             inline: false,
           },
           {
             name: "Voting link",
-            value: `[Vote](${config.dbl.vote})`,
+            value: `[Vote on DBL](${config.dbl.vote})`,
             inline: false,
           },
         ],
@@ -473,10 +491,13 @@ function invite(message, args, client) {
   }
 }
 
-function avatar(message, args) {
+async function avatar(message, args) {
   if (_hasPermission(message, permissionGroups.basic)) {
-    let user = message.mentions.users.first();
-    if (!user) user = message.author;
+    let user = await message.mentions.users.first();
+    if (!user) {
+      user = await client.users.cache.get(args[0]);
+      if (!user) user = message.author;
+    }
     message.channel.send({
       embed: {
         color: 15567,
@@ -691,7 +712,7 @@ async function remind(message, args) {
   else message.author.send("I am missing the permissions " + permissionGroups.basic);
 }
 
-function rpc(message, args) {
+function rps(message, args) {
   if (_hasPermission(message, permissionGroups.basic)) {
     if (args && args.length >= 1) {
       let user;
@@ -702,7 +723,7 @@ function rpc(message, args) {
         case "scissor": user = "s"; break;
         case "p": user = "p"; break;
         case "paper": user = "p"; break;
-        default: message.author.send(`Usage: ${getPrefix(message)}rpc <rock/paper/scissor> [hard/medium/easy]`); return;
+        default: message.author.send(`Usage: ${getPrefix(message)}rps <rock/paper/scissor> [hard/medium/easy]`); return;
       }
       let d = "m";
       if (args.length >= 2) {
@@ -737,9 +758,39 @@ function rpc(message, args) {
           case "s": ai = "r"; break;
         }
       }
-      _rpcCheck(message, user, ai);
+      _rpsCheck(message, user, ai);
     }
-    else message.author.send(`Usage: ${getPrefix(message)}rpc <rock/paper/scissor> [hard/medium/easy]`);
+    else message.author.send(`Usage: ${getPrefix(message)}rps <rock/paper/scissor> [hard/medium/easy]`);
+  }
+  else message.author.send("I am missing the permissions: " + permissionGroups.basic);
+}
+
+function tictac(message, args, client) {
+  if (_hasPermission(message, permissionGroups.basic)) {
+    tictactoe(message, client);
+  }
+  else message.author.send("I am missing the permissions: " + permissionGroups.basic);
+}
+
+function logs(message, args, client) {
+  if (_hasPermission(message, permissionGroups.basic)) {
+    if (_userHasPermission(message, userPermissionGroups.admin)) {
+      if (args && args.length >= 1) {
+        switch (args[0]) {
+          case "status": _logStatus(message); break;
+          case "enable":
+          case "disable": _logToggle(message, args[0]); break;
+          case "set": _logSet(message, args); break;
+          case "user": _logUser(message, args); break;
+          case "role": _logRole(message, args); break;
+          case "message": _logMessage(message, args); break;
+          case "channel": _logChannel(message, args); break;
+          default: message.author.send(`\`\`\`yaml\nUsage Options:\n\t${getPrefix(message)}logs status\n\t${getPrefix(message)}logs enable\n\t${getPrefix(message)}logs disable\n\t${getPrefix(message)}logs set <channel_id>\n\t${getPrefix(message)}logs user enable\n\t${getPrefix(message)}logs user disable\n\t${getPrefix(message)}logs role enable\n\t${getPrefix(message)}logs role disable\n\t${getPrefix(message)}logs message enable\n\t${getPrefix(message)}logs message disable\n\t${getPrefix(message)}logs channel enable\n\t${getPrefix(message)}logs channel disable\`\`\``);
+        }
+      }
+      else message.author.send(`\`\`\`yaml\nUsage Options:\n\t${getPrefix(message)}logs status\n\t${getPrefix(message)}logs enable\n\t${getPrefix(message)}logs disable\n\t${getPrefix(message)}logs set <channel_id>\n\t${getPrefix(message)}logs user enable\n\t${getPrefix(message)}logs user disable\n\t${getPrefix(message)}logs role enable\n\t${getPrefix(message)}logs role disable\n\t${getPrefix(message)}logs message enable\n\t${getPrefix(message)}logs message disable\n\t${getPrefix(message)}logs channel enable\n\t${getPrefix(message)}logs channel disable\`\`\``);
+    }
+    else message.channel.send("You are missing the " + userPermissionGroups.admin + " permissions.");
   }
   else message.author.send("I am missing the permissions: " + permissionGroups.basic);
 }
@@ -774,12 +825,28 @@ async function _ban(message, member, reason) {
 
 function _welcomeStatus(message) {
   let status = welStatus(message);
-  message.channel.send(`\`\`\`yaml\nWelcome Status\n\nJoin Messages: ${status[0]}\nJoin Channel: ${status[1]}\nLeave Messages: ${status[2]}\nLeave Channel: ${status[3]}\`\`\``);
+  let joinChannel;
+  let leaveChannel;
+  if (status[1]) joinChannel = `#${message.guild.channels.cache.get(status[1]).name}`;
+  if (status[3]) leaveChannel = `#${message.guild.channels.cache.get(status[3]).name}`;
+  message.channel.send(`\`\`\`yaml\nWelcome Status\n\nJoin Messages: ${status[0]}\nJoin Channel: ${joinChannel}\nLeave Messages: ${status[2]}\nLeave Channel: ${leaveChannel}\`\`\``);
 }
 
 function _welcomeToggle(message, option) {
   if (option === 'enable') welEnable(message);
   else welDisable(message);
+}
+
+function _welcomeJoin(message, args) {
+  if (args[1]) {
+    switch (args[1]) {
+      case 'enable':
+      case 'disable': _welcomeJoinToggle(message, args[1]); _welcomeStatus(message); break;
+      case 'set': _welcomeJoinChannel(message, args); break;
+      default: message.author.send(`\`\`\`yaml\nUsage options:\n\t${getPrefix(message)}welcome join enable\n\t${getPrefix(message)}welcome join disable\n\t${getPrefix(message)}welcome join set <channel_id>\`\`\``);
+    }
+  }
+  else message.author.send(`\`\`\`yaml\nUsage options:\n\t${getPrefix(message)}welcome join enable\n\t${getPrefix(message)}welcome join disable\n\t${getPrefix(message)}welcome join set <channel_id>\`\`\``);
 }
 
 function _welcomeLeave(message, args) {
@@ -837,7 +904,7 @@ function _findChannel(message, channel) {
   return found;
 }
 
-function _rpcCheck(message, user, ai) {
+function _rpsCheck(message, user, ai) {
   if (user === ai) {
     switch (ai) {
       case "r": ai = "rock"; break;
@@ -852,4 +919,75 @@ function _rpcCheck(message, user, ai) {
   else if (user === "r" && ai === "p") message.channel.send(`I choose paper. I win!`);
   else if (user === "s" && ai === "r") message.channel.send(`I choose rock. I win!`);
   else if (user === "p" && ai === "s") message.channel.send(`I choose scissor. I win!`);
+}
+
+function _logStatus(message) {
+  let status = logStatus(message.guild);
+  let logChannel;
+  if (status[0]) logChannel = `#${message.guild.channels.cache.get(status[0]).name}`;
+  message.channel.send(`\`\`\`yaml\nLogs Status\n\nLogs Channel: ${logChannel}\nUser Logs: ${status[1]}\nRole Logs: ${status[2]}\nMessage Logs: ${status[3]}\nChannel Logs: ${status[4]}\`\`\``);
+}
+
+function _logToggle(message, option) {
+  if (option === "enable") {
+    enableUser(message.guild);
+    enableRole(message.guild);
+    enableMessage(message.guild);
+    enableChannel(message.guild);
+  }
+  else {
+    disableUser(message.guild);
+    disableRole(message.guild);
+    disableMessage(message.guild);
+    disableChannel(message.guild);
+    clearLogsChannel(message.guild);
+  }
+  _logStatus(message);
+}
+
+async function _logSet(message, args) {
+  if (args[1]) {
+    if (await _findChannel(message, args[1])) {
+      setLogsChannel(message.guild, args[1]);
+      _logStatus(message);
+    }
+    else message.channel.send(`I could not find a text channel with channel id ${args[1]}`);
+  }
+  else message.author.send(`Usage: ${getPrefix(message)}logs set <channel_id>`);
+}
+
+function _logUser(message, args) {
+  if (args[1] && (args[1] === "enable" || args[1] === "disable")) {
+    if (args[1] === "enable") enableUser(message.guild);
+    else disableUser(message.guild);
+    _logStatus(message);
+  }
+  else message.author.send(`\`\`\`yaml\nUsage options:\n\t${getPrefix(message)}logs user enable\n\t${getPrefix(message)}logs user disable\`\`\``);
+}
+
+function _logRole(message, args) {
+  if (args[1] && (args[1] === "enable" || args[1] === "disable")) {
+    if (args[1] === "enable") enableRole(message.guild);
+    else disableRole(message.guild);
+    _logStatus(message);
+  }
+  else message.author.send(`\`\`\`yaml\nUsage options:\n\t${getPrefix(message)}logs role enable\n\t${getPrefix(message)}logs role disable\`\`\``); 
+}
+
+function _logMessage(message, args) {
+  if (args[1] && (args[1] === "enable" || args[1] === "disable")) {
+    if (args[1] === "enable") enableMessage(message.guild);
+    else disableMessage(message.guild);
+    _logStatus(message);
+  }
+  else message.author.send(`\`\`\`yaml\nUsage options:\n\t${getPrefix(message)}logs message enable\n\t${getPrefix(message)}logs message disable\`\`\``);
+}
+
+function _logChannel(message, args) {
+  if (args[1] && (args[1] === "enable" || args[1] === "disable")) {
+    if (args[1] === "enable") enableChannel(message.guild);
+    else disableChannel(message.guild);
+    _logStatus(message);
+  }
+  else message.author.send(`\`\`\`yaml\nUsage options:\n\t${getPrefix(message)}logs channel enable\n\t${getPrefix(message)}logs channel disable\`\`\``);
 }

@@ -2,8 +2,8 @@
 
 const EventEmitter = require('events');
 const BroadcastAudioPlayer = require('./player/BroadcastAudioPlayer');
-const { Events } = require('../../util/Constants');
 const PlayInterface = require('./util/PlayInterface');
+const { Events } = require('../../util/Constants');
 
 /**
  * A voice broadcast can be played across multiple voice connections for improved shared-stream efficiency.
@@ -18,6 +18,7 @@ const PlayInterface = require('./util/PlayInterface');
  * }
  * ```
  * @implements {PlayInterface}
+ * @extends {EventEmitter}
  */
 class VoiceBroadcast extends EventEmitter {
   constructor(client) {
@@ -59,8 +60,9 @@ class VoiceBroadcast extends EventEmitter {
    * broadcast.play('http://www.sample-videos.com/audio/mp3/wave.mp3');
    * @returns {BroadcastDispatcher}
    */
-  play() { return null; }
-
+  play() {
+    return null;
+  }
 
   /**
    * Ends the broadcast, unsubscribing all subscribed channels and deleting the broadcast

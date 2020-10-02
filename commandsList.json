@@ -112,8 +112,13 @@
         "inline": "false"
       },
       {
-        "name": "rpc <choice> [difficulty]",
+        "name": "rps <choice> [difficulty]",
         "value": "Play rock paper scissor. Indicate easy, medium, or hard for the difficulty.",
+        "inline": "false"
+      },
+      {
+        "name": "tictactoe",
+        "value": "Play tictactoe",
         "inline": "false"
       },
       {
@@ -177,17 +182,22 @@
       },
       {
         "name": "logs disable",
-        "value": "Disable logs for this guild",
+        "value": "Disable logs for this server",
         "inline": "false"
       },
       {
         "name": "logs enable",
-        "value": "Enable all categories of logging for this guild",
+        "value": "Enable all categories of logging for this server",
         "inline": "false"
       },
       {
         "name": "logs status",
         "value": "Get the current status for logs",
+        "inline": "false"
+      },
+      {
+        "name": "logs user enable/disable",
+        "value": "Enable or disable user logs",
         "inline": "false"
       },
       {

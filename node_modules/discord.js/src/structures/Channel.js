@@ -1,8 +1,8 @@
 'use strict';
 
-const Snowflake = require('../util/Snowflake');
 const Base = require('./Base');
 const { ChannelTypes } = require('../util/Constants');
+const Snowflake = require('../util/Snowflake');
 
 /**
  * Represents any channel on Discord.
@@ -82,7 +82,10 @@ class Channel extends Base {
    *   .catch(console.error);
    */
   delete() {
-    return this.client.api.channels(this.id).delete().then(() => this);
+    return this.client.api
+      .channels(this.id)
+      .delete()
+      .then(() => this);
   }
 
   /**
@@ -96,11 +99,16 @@ class Channel extends Base {
   static create(client, data, guild) {
     const Structures = require('../util/Structures');
     let channel;
-    if (data.type === ChannelTypes.DM || (data.type !== ChannelTypes.GROUP && !data.guild_id && !guild)) {
-      const DMChannel = Structures.get('DMChannel');
-      channel = new DMChannel(client, data);
+    if (!data.guild_id && !guild) {
+      if ((data.recipients && data.type !== ChannelTypes.GROUP) || data.type === ChannelTypes.DM) {
+        const DMChannel = Structures.get('DMChannel');
+        channel = new DMChannel(client, data);
+      } else if (data.type === ChannelTypes.GROUP) {
+        const PartialGroupDMChannel = require('./PartialGroupDMChannel');
+        channel = new PartialGroupDMChannel(client, data);
+      }
     } else {
-      guild = guild || client.guilds.get(data.guild_id);
+      guild = guild || client.guilds.cache.get(data.guild_id);
       if (guild) {
         switch (data.type) {
           case ChannelTypes.TEXT: {
@@ -129,7 +137,7 @@ class Channel extends Base {
             break;
           }
         }
-        if (channel) guild.channels.set(channel.id, channel);
+        if (channel) guild.channels.cache.set(channel.id, channel);
       }
     }
     return channel;

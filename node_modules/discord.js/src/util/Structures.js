@@ -1,7 +1,28 @@
 'use strict';
 
 /**
- * Allows for the extension of built-in Discord.js structures that are instantiated by {@link DataStore DataStores}.
+ * An extendable structure:
+ * * **`GuildEmoji`**
+ * * **`DMChannel`**
+ * * **`TextChannel`**
+ * * **`VoiceChannel`**
+ * * **`CategoryChannel`**
+ * * **`NewsChannel`**
+ * * **`StoreChannel`**
+ * * **`GuildMember`**
+ * * **`Guild`**
+ * * **`Message`**
+ * * **`MessageReaction`**
+ * * **`Presence`**
+ * * **`ClientPresence`**
+ * * **`VoiceState`**
+ * * **`Role`**
+ * * **`User`**
+ * @typedef {string} ExtendableStructure
+ */
+
+/**
+ * Allows for the extension of built-in Discord.js structures that are instantiated by {@link BaseManager Managers}.
  */
 class Structures {
   constructor() {
@@ -22,7 +43,7 @@ class Structures {
    * Extends a structure.
    * <warn> Make sure to extend all structures before instantiating your client.
    * Extending after doing so may not work as expected. </warn>
-   * @param {string} structure Name of the structure class to extend
+   * @param {ExtendableStructure} structure Name of the structure class to extend
    * @param {Function} extender Function that takes the base class to extend as its only parameter and returns the
    * extended class/prototype
    * @returns {Function} Extended class/prototype returned from the extender
@@ -45,7 +66,7 @@ class Structures {
     if (typeof extender !== 'function') {
       const received = `(received ${typeof extender})`;
       throw new TypeError(
-        `"extender" argument must be a function that returns the extended structure class/prototype ${received}.`
+        `"extender" argument must be a function that returns the extended structure class/prototype ${received}.`,
       );
     }
 
@@ -60,7 +81,7 @@ class Structures {
       const received = `${extended.name || 'unnamed'}${prototype.name ? ` extends ${prototype.name}` : ''}`;
       throw new Error(
         'The class/prototype returned from the extender function must extend the existing structure class/prototype' +
-        ` (received function ${received}; expected extension of ${structures[structure].name}).`
+          ` (received function ${received}; expected extension of ${structures[structure].name}).`,
       );
     }
 

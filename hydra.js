@@ -18,41 +18,11 @@ var config = require('./hydrauth.json'); // Main config file.
 }
 */
 
-var fs = require('fs');
 var Discord = require('discord.js');
 var client = new Discord.Client();
 var DBL = require('dblapi.js');
 var dbl = new DBL(config.dbl.token, client);
 var commands = require('./commands.js');
-var commandsUse = {
-  "hmw": 0,
-  "prefix": 0,
-  "ping": 0,
-  "pong": 0,
-  "commands": 0,
-  "roll": 0,
-  "links": 0,
-  "rip": 0,
-  "kick": 0,
-  "ban": 0,
-  "bulkdel": 0,
-  "suggest": 0,
-  "invite": 0,
-  "avatar": 0,
-  "flip": 0,
-  "add": 0,
-  "subtract": 0,
-  "divide": 0,
-  "multiply": 0,
-  "welcome": 0,
-  "help": 0,
-  "react": 0,
-  "8ball": 0,
-  "blackjack": 0,
-  "info": 0,
-  "remind": 0,
-  "rps": 0
-};
 // var voiceCommands = require('./voiceCommands.js');
 
 // Prefix require
@@ -65,12 +35,34 @@ var welLeaveChannel = require('./welcome.js').getLeaveChannel;
 var welLeaveEnabled = require('./welcome.js').getLeaveEnable;
 
 // Logs require
-// var getChannel = require('./logs.js').getChannel;
-// var getMessage = require('./logs.js').getMessage;
-// var getRole = require('./logs.js').getRole;
-// var getLogsChannel = require('./logs.js').getLogsChannel;
+var getLogsChannel = require('./logs.js').getLogsChannel;
+var getUser = require('./logs.js').getUser;
+var getRole = require('./logs.js').getRole;
+var getMessage = require('./logs.js').getMessage;
+var getChannel = require('./logs.js').getChannel;
 
 var timeout = [''];
+
+/**
+ * Events
+ *
+ * ready Event
+ * message Event
+ * guildCreate (guild join) Event
+ * guildMemberAdd (new member) Event
+ * guildDelete (guild leave) Event
+ * 
+ * guildBanAdd Event
+ * guildBanRemove Event
+ * roleDelete Event
+ * roleUpdate Event
+ * messageDelete Event
+ * messageDeleteBulk Event
+ * channelCreate Event
+ * channelDelete Event
+ * channelUpdate Event
+ * 
+ */
 
 client.login(config.token);
 
@@ -88,19 +80,23 @@ client.on('guildMemberRemove', _memberLeave);
 
 client.on('guildDelete', _deleteGuild);
 
-// client.on('channelCreate', _channelCreate);
+client.on('guildBanAdd', _banAdd);
 
-// client.on('channelDelete', _channelDelete);
+client.on('guildBanRemove', _banRemove);
 
-// client.on('messageDelete', _messageDelete);
+client.on('roleDelete', _roleDelete);
 
-// client.on('messageDeleteBulk', _messageBulkDel);
+client.on('roleUpdate', _roleUpdate);
 
-// // client.on('roleCreate', _roleCreate);
+client.on('messageDelete', _messageDelete);
 
-// client.on('roleDelete', _roleDelete);
+client.on('messageDeleteBulk', _messageDeleteBulk);
 
-// client.on('roleUpdate', _roleUpdate);
+client.on('channelCreate', _channelCreate);
+
+client.on('channelDelete', _channelDelete);
+
+client.on('channelUpdate', _channelUpdate);
 
 function _ready() {
   console.log(`\nConnected as ${client.user.tag}`);
@@ -109,9 +105,6 @@ function _ready() {
   setInterval(function() {
     dbl.postStats(client.guilds.cache.size);
   }, 1800000);
-  setInterval(function() {
-    _postCommands();
-  }, 86400000);
 }
 
 function _parseMessage(message) {
@@ -126,8 +119,8 @@ async function _parseVC(message) {
   else return;
 }
 
-async function _setFirstActivity() {
-  await client.user.setActivity(`Poker on ${config.prefix}help with ${client.guilds.cache.size} servers.`);
+function _setFirstActivity() {
+  client.user.setActivity(`Poker on ${config.prefix}help with ${client.guilds.cache.size} servers.`);
 }
 
 function _memberJoin(member) {
@@ -230,11 +223,11 @@ function _deleteGuild() {
 function _setActivity() {
   clearInterval(timeout[0]);
   let activity = {
-    0: `Poker. ${config.prefix}help with ${client.guilds.cache.size} servers`,
+    0: `poker. ${config.prefix}help with ${client.guilds.cache.size} servers`,
     1: `my ${client.guilds.cache.size} servers. ${config.prefix}help for fun`,
     2: `the ${config.prefix}help of ${client.guilds.cache.size} guilds`,
     3: `Esports with ${client.guilds.cache.size} guilds on ${config.prefix}help`,
-    4: `Games with ${client.guilds.cache.size} servers.`
+    4: `games with ${client.guilds.cache.size} servers.`
   }
   let activityType = {
     0: "WATCHING",
@@ -264,212 +257,119 @@ function _processCommand(message) {
   let commandArray = command.split(' ');
   if (!commandArray.length) return;
   if (commands.hasOwnProperty(commandArray[0])) {
-    commandsUse[commandArray[0]] += 1;
     commands[commandArray[0]](message, commandArray.slice(1), client);
   }
   else return;
 }
 
-function _channelCreate(channel) {
-  if (!channel.guild || getChannel(channel.guild) === false) return;
-  let sendChannel = client.channels.get(getLogsChannel(channel.guild));
-  if (!sendChannel) return;
-  sendChannel.send({
+function _banAdd(guild, user) {
+  if (!guild || !getUser(guild)) return;
+  let channel = client.channels.cache.get(getLogsChannel(guild));
+  if (!channel) return;
+  channel.send({
     embed: {
       color: 0xff0000,
-      author: {
-        name: client.user.tag,
-        icon_url: client.user.displayAvatarURL(),
-      },
-      title: "Channel Create",
-      description: "Logging Event",
-      thumbnail: {
-        url: client.user.displayAvatarURL(),
-      },
-      fields: [
-        {
-          name: "Channel Name",
-          value: `${channel.name}`,
-          inline: false,
-        },
-        {
-          name: "Channel Type",
-          value: `${channel.type}`,
-          inline: false,
-        },
-      ],
-      timestamp: new Date(),
-    }
-  });
-}
-
-function _channelDelete(channel) {
-  if (!channel.guild || getChannel(channel.guild) === false) return;
-  let sendChannel = client.channels.get(getLogsChannel(channel.guild));
-  if (!sendChannel) return;
-  sendChannel.send({
-    embed: {
-      color: 0xff0000,
-      author: {
-        name: client.user.tag,
-        icon_url: client.user.displayAvatarURL(),
-      },
-      title: "Channel Delete",
-      description: "Logging Event",
-      thumbnail: {
-        url: client.user.displayAvatarURL(),
-      },
-      fields: [
-        {
-          name: "Channel Name",
-          value: `${channel.name}`,
-          inline: false,
-        },
-        {
-          name: "Channel Type",
-          value: `${channel.type}`,
-          inline: false,
-        },
-      ],
-      timestamp: new Date(),
-    }
-  });
-}
-
-function _messageDelete(message) {
-  if (!message.guild || getMessage(message.guild) === false) return;
-  let sendChannel = client.channels.get(getLogsChannel(message.guild));
-  if (!sendChannel) return;
-  sendChannel.send({
-    embed: {
-      color: 0xff0000,
-      author: {
-        name: client.user.tag,
-        icon_url: client.user.displayAvatarURL(),
-      },
-      title: "Message Delete",
-      description: "Logging Event",
-      thumbnail: {
-        url: client.user.displayAvatarURL(),
-      },
-      fields: [
-        {
-          name: "Channel Name",
-          value: `${message.channel.name}`,
-          inline: false,
-        },
-      ],
-      timestamp: new Date(),
-    }
-  });
-}
-
-function _messageBulkDel(message) {
-  let messageGuild = message.find(val => val.guild).channel.guild;
-  let messageChannel = message.find(val => val.channel).channel;
-  if (!messageGuild || getMessage(messageGuild) === false) return;
-  let sendChannel = client.channels.get(getLogsChannel(messageGuild));
-  if (!sendChannel) return;
-  sendChannel.send({
-    embed: {
-      color: 0xff0000,
-      author: {
-        name: client.user.tag,
-        icon_url: client.user.displayAvatarURL(),
-      },
-      title: "Bulk Message Delete",
-      description: "Logging Event",
-      thumbnail: {
-        url: client.user.displayAvatarURL(),
-      },
-      fields: [
-        {
-          name: "Channel Name",
-          value: `${messageChannel.name}`,
-          inline: false,
-        },
-        {
-          name: "Messages Deleted",
-          value: `${message.array().length}`,
-          inline: false,
-        },
-      ],
-      timestamp: new Date(),
-    }
-  });
-}
-
-function _roleCreate(role) {
-  if (!role.guild || getRole(role.guild) === false) return;
-  let sendChannel = client.channels.get(getLogsChannel(role.guild));
-  if (!sendChannel) return;
-  sendChannel.send({
-    embed: {
-      color: 0xff0000,
+      title: "Member Ban",
       author: {
         name: client.user.tag,
         icon_url: client.user.displayAvatarURL()
       },
-      title: "Role Create",
-      description: "Logging Event",
       thumbnail: {
-        url: client.user.displayAvatarURL()
+        url: user.displayAvatarURL()
       },
       fields: [
         {
-          name: "Role Name",
-          value: `${role.name}`,
-          inline: false
+          name: "Banned Member",
+          value: user.tag
         }
       ],
-      timestamp: new Date()
+      timestamp: new Date(),
+      footer: {
+        icon_url: guild.iconURL({dynamic: true}),
+        text: guild.name
+      }
+    }
+  });
+}
+
+function _banRemove(guild, user) {
+  if (!guild || !getUser(guild)) return;
+  let channel = client.channels.cache.get(getLogsChannel(guild));
+  if (!channel) return;
+  channel.send({
+    embed: {
+      color: [255, 165, 0],
+      title: "Member Unban",
+      author: {
+        name: client.user.tag,
+        icon_url: client.user.displayAvatarURL()
+      },
+      thumbnail: {
+        url: user.displayAvatarURL()
+      },
+      fields: [
+        {
+          name: "Unbanned Member",
+          value: user.tag
+        }
+      ],
+      timestamp: new Date(),
+      footer: {
+        icon_url: guild.iconURL({dynamic: true}),
+        text: guild.name
+      }
     }
   });
 }
 
 function _roleDelete(role) {
-  if (!role.guild || getRole(role.guild) === false) return;
-  let sendChannel = client.channels.get(getLogsChannel(role.guild));
-  if (!sendChannel) return;
-  sendChannel.send({
+  if (!role.guild || !getRole(role.guild)) return;
+  let channel = client.channels.cache.get(getLogsChannel(role.guild));
+  if (!channel) return;
+  let thumbnail = role.guild.iconURL({dynamic: true});
+  if (!thumbnail) thumbnail = client.user.displayAvatarURL();
+  channel.send({
     embed: {
-      color: 0xff0000,
+      color: [0, 0, 255],
+      title: "Role Delete",
       author: {
         name: client.user.tag,
         icon_url: client.user.displayAvatarURL()
       },
-      title: "Role Delete",
-      description: "Logging Event",
       thumbnail: {
-        url: client.user.displayAvatarURL()
+        url: thumbnail
       },
       fields: [
         {
           name: "Role Name",
-          value: `${role.name}`,
-          inline: false
+          value: role.name
         }
       ],
-      timestamp: new Date()
+      timestamp: new Date(),
+      footer: {
+        icon_url: role.guild.iconURL({dynamic: true}),
+        text: role.guild.name
+      }
     }
   });
 }
 
 function _roleUpdate(oldRole, newRole) {
-  if (!newRole.guild || getRole(newRole.guild) === false || oldRole.rawPosition !== newRole.rawPosition) return;
-  let sendChannel = client.channels.get(getLogsChannel(newRole.guild));
-  if (!sendChannel) return;
-  sendChannel.send({
+  if (!newRole.guild || !getRole(newRole.guild) || oldRole.name === newRole.name) return;
+  let channel = client.channels.cache.get(getLogsChannel(newRole.guild));
+  if (!channel) return;
+  let thumbnail = newRole.guild.iconURL({dynamic: true});
+  if (!thumbnail) thumbnail = client.user.displayAvatarURL();
+  channel.send({
     embed: {
-      color: 0xff0000,
+      color: [0, 0, 255],
+      title: "Role Update",
       author: {
         name: client.user.tag,
         icon_url: client.user.displayAvatarURL()
       },
-      title: "Role Update",
-      description: "Logging Event",
       thumbnail: {
-        url: client.user.displayAvatarURL()
+        url: thumbnail
       },
       fields: [
         {
@@ -481,189 +381,189 @@ function _roleUpdate(oldRole, newRole) {
           name: "New Role Name",
           value: newRole.name,
           inline: true
-        },
-        {
-          name: '\u200b',
-          value: '\u200b',
-          inline: true
-        },
-        {
-          name: "Old Role Permissions",
-          value: oldRole.permissions,
-          inline: true
-        },
-        {
-          name: "New Role Permissions",
-          value: newRole.permissions,
-          inline: true
-        },
-        {
-          name: '\u200b',
-          value: '\u200b',
-          inline: true
-        },
-        {
-          name: "Is Mentionable",
-          value: newRole.mentionable,
-          inline: true
-        },
-        {
-          name: "Is Distinguished",
-          value: newRole.hoist,
-          inline: true
         }
       ],
-      timestamp: new Date()
+      timestamp: new Date(),
+      footer: {
+        text: newRole.guild.name,
+        icon_url: newRole.guild.iconURL({dynamic: true})
+      }
     }
   });
 }
 
-async function _postCommands() {
-  await client.guilds.cache.get('630018316769034241').channels.cache.get('754083191576461482').send/*(`${new Date()}\n${JSON.stringify(commandsUse)}`);*/({
+function _messageDelete(message) {
+  if (!message.guild || !getMessage(message.guild)) return;
+  let channel = client.channels.cache.get(getLogsChannel(message.guild));
+  if (!channel) return;
+  let thumbnail = message.guild.iconURL({dynamic: true});
+  if (!thumbnail) thumbnail = client.user.displayAvatarURL();
+  channel.send({
     embed: {
-      color: 16777215,
-      title: "Command Usage",
+      color: [255, 255, 0],
+      title: "Message Delete",
+      thumbnail: {
+        url: thumbnail
+      },
+      author: {
+        name: client.user.tag,
+        icon_url: client.user.displayAvatarURL()
+      },
       fields: [
         {
-          name: "hmw",
-          value: commandsUse["hmw"],
+          name: "Channel",
+          value: `#${message.channel.name}`
+        }
+      ],
+      timestamp: new Date(),
+      footer: {
+        text: message.guild.name,
+        icon_url: message.guild.iconURL({dynamic: true})
+      }
+    }
+  });
+}
+
+function _messageDeleteBulk(messages) {
+  let messageArray = messages.array();
+  if (!messageArray[0].guild || !getMessage(messageArray[0].guild)) return;
+  let channel = client.channels.cache.get(getLogsChannel(messageArray[0].guild));
+  if (!channel) return;
+  let thumbnail = messageArray[0].guild.iconURL({dynamic: true});
+  if (!thumbnail) thumbnail = client.user.displayAvatarURL();
+  channel.send({
+    embed: {
+      color: [255, 255, 0],
+      title: "Message Bulk Delete",
+      thumbnail: {
+        url: thumbnail
+      },
+      author: {
+        name: client.user.tag,
+        icon_url: client.user.displayAvatarURL()
+      },
+      fields: [
+        {
+          name: "channel",
+          value: `#${messageArray[0].channel.name}`,
+          inline: false
+        },
+        {
+          name: "Number of Messages Deleted",
+          value: messageArray.length,
+          inline: false
+        }
+      ],
+      timestamp: new Date(),
+      footer: {
+        text: messageArray[0].guild.name,
+        icon_url: messageArray[0].guild.iconURL({dynamic: true})
+      }
+    }
+  });
+}
+
+function _channelCreate(channel) {
+  if (!channel.guild || !getChannel(channel.guild)) return;
+  let ch = client.channels.cache.get(getLogsChannel(channel.guild));
+  if (!ch) return;
+  let thumbnail = channel.guild.iconURL({dynamic: true});
+  if (!thumbnail) thumbnail = client.user.displayAvatarURL();
+  ch.send({
+    embed: {
+      color: [0, 255, 0],
+      // color: [0, 128, 0],
+      title: "Channel Create",
+      author: {
+        name: client.user.tag,
+        icon_url: client.user.displayAvatarURL()
+      },
+      thumbnail: {
+        url: thumbnail
+      },
+      fields: [
+        {
+          name: "Channel Name",
+          value: `#${channel.name}`
+        }
+      ],
+      timestamp: new Date(),
+      footer: {
+        text: channel.guild.name,
+        icon_url: channel.guild.iconURL({dynamic: true})
+      }
+    }
+  });
+}
+
+function _channelDelete(channel) {
+  if (!channel.guild || !getChannel(channel.guild)) return;
+  let ch = client.channels.cache.get(getLogsChannel(channel.guild));
+  if (!ch) return;
+  let thumbnail = channel.guild.iconURL({dynamic: true});
+  if (!thumbnail) thumbnail = client.user.displayAvatarURL();
+  ch.send({
+    embed: {
+      color: [0, 255, 0],
+      // color: [0, 128, 0],
+      title: "Channel Delete",
+      author: {
+        name: client.user.tag,
+        icon_url: client.user.displayAvatarURL()
+      },
+      thumbnail: {
+        url: thumbnail
+      },
+      fields: [
+        {
+          name: "Channel Name",
+          value: `#${channel.name}`
+        }
+      ],
+      timestamp: new Date(),
+      footer: {
+        text: channel.guild.name,
+        icon_url: channel.guild.iconURL({dynamic: true})
+      }
+    }
+  });
+}
+
+function _channelUpdate(oldChannel, newChannel) {
+  if (!newChannel.guild || !getChannel(newChannel.guild) || oldChannel.name === newChannel.name) return;
+  let channel = client.channels.cache.get(getLogsChannel(newChannel.guild));
+  if (!channel) return;
+  let thumbnail = newChannel.guild.iconURL({dynamic: true});
+  if (!thumbnail) thumbnail = client.user.displayAvatarURL();
+  channel.send({
+    embed: {
+      color: [0, 255, 0],
+      // color: [0, 128, 0],
+      title: "Channel Update",
+      author: {
+        name: client.user.tag,
+        icon_url: client.user.displayAvatarURL()
+      },
+      thumbnail: {
+        url: thumbnail
+      },
+      fields: [
+        {
+          name: "Old Channel Name",
+          value: `#${oldChannel.name}`,
           inline: true
         },
         {
-          name: "prefix",
-          value: commandsUse["prefix"],
-          inline: true
-        },
-        {
-          name: "ping",
-          value: commandsUse["ping"],
-          inline: true
-        },
-        {
-          name: "pong",
-          value: commandsUse["pong"],
-          inline: true
-        },
-        {
-          name: "commands",
-          value: commandsUse["commands"],
-          inline: true
-        },
-        {
-          name: "roll",
-          value: commandsUse["roll"],
-          inline: true
-        },
-        {
-          name: "links",
-          value: commandsUse["links"],
-          inline: true
-        },
-        {
-          name: "rip",
-          value: commandsUse["rip"],
-          inline: true
-        },
-        {
-          name: "kick",
-          value: commandsUse["kick"],
-          inline: true
-        },
-        {
-          name: "ban",
-          value: commandsUse["ban"],
-          inline: true
-        },
-        {
-          name: "bulkdel",
-          value: commandsUse["bulkdel"],
-          inline: true
-        },
-        {
-          name: "suggest",
-          value: commandsUse["suggest"],
-          inline: true
-        },
-        {
-          name: "invite",
-          value: commandsUse["invite"],
-          inline: true
-        },
-        {
-          name: "avatar",
-          value: commandsUse["avatar"],
-          inline: true
-        },
-        {
-          name: "flip",
-          value: commandsUse["flip"],
-          inline: true
-        },
-        {
-          name: "add",
-          value: commandsUse["add"],
-          inline: true
-        },
-        {
-          name: "subtract",
-          value: commandsUse["subtract"],
-          inline: true
-        },
-        {
-          name: "divide",
-          value: commandsUse["divide"],
-          inline: true
-        },
-        {
-          name: "multiply",
-          value: commandsUse["multiply"],
-          inline: true
-        },
-        {
-          name: "welcome",
-          value: commandsUse["welcome"],
-          inline: true
-        },
-        {
-          name: "help",
-          value: commandsUse["help"],
-          inline: true
-        },
-        {
-          name: "react",
-          value: commandsUse["react"],
-          inline: true
-        },
-        {
-          name: "8ball",
-          value: commandsUse["8ball"],
-          inline: true
-        },
-        {
-          name: "blackjack",
-          value: commandsUse["blackjack"],
-          inline: true
-        },
-        {
-          name: "info",
-          value: commandsUse["info"],
-          inline: true
-        },
-        {
-          name: "remind",
-          value: commandsUse["remind"],
-          inline: true
-        },
-        {
-          name: "rps",
-          value: commandsUse["rps"],
+          name: "New Channel Name",
+          value: `#${newChannel.name}`,
           inline: true
         }
       ],
       timestamp: new Date(),
+      footer: {
+        text: newChannel.guild.name,
+        icon_url: newChannel.guild.iconURL({dynamic: true})
+      }
     }
   });
-  for (let i in commandsUse) {
-    commandsUse[i] = 0;
-  }
 }

@@ -1,8 +1,9 @@
 'use strict';
 
-const Util = require('../util/Util');
+const Emoji = require('./Emoji');
 const ActivityFlags = require('../util/ActivityFlags');
 const { ActivityTypes } = require('../util/Constants');
+const Util = require('../util/Util');
 
 /**
  * Activity sent in a message.
@@ -65,7 +66,7 @@ class Presence {
    * @readonly
    */
   get user() {
-    return this.client.users.get(this.userID) || null;
+    return this.client.users.cache.get(this.userID) || null;
   }
 
   /**
@@ -74,7 +75,7 @@ class Presence {
    * @readonly
    */
   get member() {
-    return this.guild.members.get(this.userID) || null;
+    return this.guild.members.cache.get(this.userID) || null;
   }
 
   patch(data) {
@@ -84,12 +85,17 @@ class Presence {
      */
     this.status = data.status || this.status || 'offline';
 
-    const activity = data.game || data.activity;
-    /**
-     * The activity of this presence
-     * @type {?Activity}
-     */
-    this.activity = activity ? new Activity(this, activity) : null;
+    if (data.activities) {
+      /**
+       * The activities of this presence
+       * @type {Activity[]}
+       */
+      this.activities = data.activities.map(activity => new Activity(this, activity));
+    } else if (data.activity || data.game) {
+      this.activities = [new Activity(this, data.game || data.activity)];
+    } else {
+      this.activities = [];
+    }
 
     /**
      * The devices this presence is on
@@ -105,7 +111,7 @@ class Presence {
 
   _clone() {
     const clone = Object.assign(Object.create(this), this);
-    if (this.activity) clone.activity = this.activity._clone();
+    if (this.activities) clone.activities = this.activities.map(activity => activity._clone());
     return clone;
   }
 
@@ -115,13 +121,15 @@ class Presence {
    * @returns {boolean}
    */
   equals(presence) {
-    return this === presence || (
-      presence &&
-      this.status === presence.status &&
-      this.activity ? this.activity.equals(presence.activity) : !presence.activity &&
+    return (
+      this === presence ||
+      (presence &&
+        this.status === presence.status &&
+        this.activities.length === presence.activities.length &&
+        this.activities.every((activity, index) => activity.equals(presence.activities[index])) &&
         this.clientStatus.web === presence.clientStatus.web &&
         this.clientStatus.mobile === presence.clientStatus.mobile &&
-        this.clientStatus.desktop === presence.clientStatus.desktop
+        this.clientStatus.desktop === presence.clientStatus.desktop)
     );
   }
 
@@ -179,10 +187,12 @@ class Activity {
      * @prop {?Date} start When the activity started
      * @prop {?Date} end When the activity will end
      */
-    this.timestamps = data.timestamps ? {
-      start: data.timestamps.start ? new Date(Number(data.timestamps.start)) : null,
-      end: data.timestamps.end ? new Date(Number(data.timestamps.end)) : null,
-    } : null;
+    this.timestamps = data.timestamps
+      ? {
+          start: data.timestamps.start ? new Date(Number(data.timestamps.start)) : null,
+          end: data.timestamps.end ? new Date(Number(data.timestamps.end)) : null,
+        }
+      : null;
 
     /**
      * Party of the activity
@@ -205,6 +215,18 @@ class Activity {
      * @type {Readonly<ActivityFlags>}
      */
     this.flags = new ActivityFlags(data.flags).freeze();
+
+    /**
+     * Emoji for a custom activity
+     * @type {?Emoji}
+     */
+    this.emoji = data.emoji ? new Emoji(presence.client, data.emoji) : null;
+
+    /**
+     * Creation date of the activity
+     * @type {number}
+     */
+    this.createdTimestamp = new Date(data.created_at).getTime();
   }
 
   /**
@@ -213,12 +235,19 @@ class Activity {
    * @returns {boolean}
    */
   equals(activity) {
-    return this === activity || (
-      activity &&
-      this.name === activity.name &&
-      this.type === activity.type &&
-      this.url === activity.url
+    return (
+      this === activity ||
+      (activity && this.name === activity.name && this.type === activity.type && this.url === activity.url)
     );
+  }
+
+  /**
+   * The time the activity was created at
+   * @type {Date}
+   * @readonly
+   */
+  get createdAt() {
+    return new Date(this.createdTimestamp);
   }
 
   /**
@@ -275,8 +304,10 @@ class RichPresenceAssets {
    */
   smallImageURL({ format, size } = {}) {
     if (!this.smallImage) return null;
-    return this.activity.presence.client.rest.cdn
-      .AppAsset(this.activity.applicationID, this.smallImage, { format, size });
+    return this.activity.presence.client.rest.cdn.AppAsset(this.activity.applicationID, this.smallImage, {
+      format,
+      size,
+    });
   }
 
   /**
@@ -290,9 +321,13 @@ class RichPresenceAssets {
     if (!this.largeImage) return null;
     if (/^spotify:/.test(this.largeImage)) {
       return `https://i.scdn.co/image/${this.largeImage.slice(8)}`;
+    } else if (/^twitch:/.test(this.largeImage)) {
+      return `https://static-cdn.jtvnw.net/previews-ttv/live_user_${this.largeImage.slice(7)}.png`;
     }
-    return this.activity.presence.client.rest.cdn
-      .AppAsset(this.activity.applicationID, this.largeImage, { format, size });
+    return this.activity.presence.client.rest.cdn.AppAsset(this.activity.applicationID, this.largeImage, {
+      format,
+      size,
+    });
   }
 }
 

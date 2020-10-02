@@ -1,8 +1,8 @@
 'use strict';
 
 const Base = require('./Base');
-const { browser } = require('../util/Constants');
 const { Error, TypeError } = require('../errors');
+const { browser } = require('../util/Constants');
 
 /**
  * Represents the voice state for a Guild Member.
@@ -72,7 +72,7 @@ class VoiceState extends Base {
    * @readonly
    */
   get member() {
-    return this.guild.members.get(this.id) || null;
+    return this.guild.members.cache.get(this.id) || null;
   }
 
   /**
@@ -81,7 +81,7 @@ class VoiceState extends Base {
    * @readonly
    */
   get channel() {
-    return this.guild.channels.get(this.channelID) || null;
+    return this.guild.channels.cache.get(this.channelID) || null;
   }
 
   /**
@@ -119,9 +119,7 @@ class VoiceState extends Base {
    * @readonly
    */
   get speaking() {
-    return this.channel && this.channel.connection ?
-      Boolean(this.channel.connection._speaking.get(this.id)) :
-      null;
+    return this.channel && this.channel.connection ? Boolean(this.channel.connection._speaking.get(this.id)) : null;
   }
 
   /**
@@ -154,16 +152,16 @@ class VoiceState extends Base {
   }
 
   /**
-   * Moves the member to a different channel, or kick them from the one they're in.
-   * @param {ChannelResolvable|null} [channel] Channel to move the member to, or `null` if you want to kick them from
-   * voice
-   * @param {string} [reason] Reason for moving member to another channel or kicking
+   * Moves the member to a different channel, or disconnects them from the one they're in.
+   * @param {ChannelResolvable|null} [channel] Channel to move the member to, or `null` if you want to disconnect them
+   * from voice. Requires the `MOVE_MEMBERS` permission.
+   * @param {string} [reason] Reason for moving member to another channel or disconnecting
    * @returns {Promise<GuildMember>}
    */
   setChannel(channel, reason) {
-    return this.member ?
-      this.member.edit({ channel }, reason) :
-      Promise.reject(new Error('VOICE_STATE_UNCACHED_MEMBER'));
+    return this.member
+      ? this.member.edit({ channel }, reason)
+      : Promise.reject(new Error('VOICE_STATE_UNCACHED_MEMBER'));
   }
 
   /**
