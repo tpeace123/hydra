@@ -41,6 +41,9 @@ var disableMessage = require('./logs.js').disableMessage;
 var enableChannel = require('./logs.js').enableChannel;
 var disableChannel = require('./logs.js').disableChannel;
 
+// Custom commands require
+var cCom = require('./customCommands.js');
+
 module.exports = {
   hmw: hmw,
   prefix: prefix,
@@ -70,8 +73,45 @@ module.exports = {
   remind: remind,
   rps: rps,
   tictactoe: tictac,
-  logs: logs
+  logs: logs,
+  policy: policy,
+  cc: custom,
+  ccl: ccL
 }
+
+const allCommands = [
+  "hmw",
+  "prefix",
+  "ping",
+  "pong",
+  "commands",
+  "roll",
+  "links",
+  "rip",
+  "kick",
+  "ban",
+  "bulkdel",
+  "suggest",
+  "invite",
+  "avatar",
+  "flip",
+  "add",
+  "subtract",
+  "divide",
+  "multiply",
+  "welcome",
+  "help",
+  "react",
+  "8ball",
+  "blackjack",
+  "info",
+  "remind",
+  "rps",
+  "tictactoe",
+  "logs",
+  "policy",
+  "cc"
+];
 
 const permissionGroups = {
   basic: ['SEND_MESSAGES'],
@@ -95,7 +135,12 @@ const userPermissionGroups = {
 }
 
 function help(message) {
-  message.author.send(`Use \`${getPrefix(message)}commands\` for a list of commands.`);
+  if (_hasPermission(message, permissionGroups.basic)) {
+    message.channel.send(`Use \`${getPrefix(message)}commands\` for a list of commands.`);
+  }
+  else {
+    message.author.send(`Use \`${getPrefix(message)}commands\` for a list of commands.`);
+  }
 }
 
 function hmw(message, args) {
@@ -208,6 +253,16 @@ async function commands(message, args, client) {
   commandsList.prefixCommands.footer.icon_url = message.author.displayAvatarURL();
   commandsList.prefixCommands.footer.text = message.author.tag;
 
+  commandsList.customCommands.color = color;
+  commandsList.customCommands.author.name = client.user.tag;
+  commandsList.customCommands.author.icon_url = client.user.displayAvatarURL();
+  commandsList.customCommands.thumbnail.url = client.user.displayAvatarURL();
+  commandsList.customCommands.fields[0].value = config.prefix;
+  commandsList.customCommands.fields[1].value = getPrefix(message);
+  commandsList.customCommands.timestamp = new Date();
+  commandsList.customCommands.footer.icon_url = message.author.displayAvatarURL();
+  commandsList.customCommands.footer.text = message.author.tag;
+
   // commandsList.musicCommands.color = color;
   // commandsList.musicCommands.author.name = client.user.tag;
   // commandsList.musicCommands.author.icon_url = client.user.displayAvatarURL();
@@ -224,7 +279,8 @@ async function commands(message, args, client) {
     case "prefix": message.author.send({embed: commandsList.prefixCommands}); break;
     case "welcome": message.author.send({embed: commandsList.welcomeCommands}); break;
     case "logs": message.author.send({embed: commandsList.logsCommands}); break;
-    default: await message.author.send({embed: commandsList.socialCommands}); await message.author.send({embed: commandsList.modCommands}); await message.author.send({embed: commandsList.logsCommands}); await message.author.send({embed: commandsList.prefixCommands}); await message.author.send({embed: commandsList.welcomeCommands});
+    case "custom": message.author.send({embed: commandsList.customCommands}); break;
+    default: await message.author.send({embed: commandsList.socialCommands}); await message.author.send({embed: commandsList.modCommands}); await message.author.send({embed: commandsList.logsCommands}); await message.author.send({embed: commandsList.prefixCommands}); await message.author.send({embed: commandsList.welcomeCommands}); message.author.send({embed: commandsList.customCommands});
   }
 }
 
@@ -491,7 +547,7 @@ function invite(message, args, client) {
   }
 }
 
-async function avatar(message, args) {
+async function avatar(message, args, client) {
   if (_hasPermission(message, permissionGroups.basic)) {
     let user = await message.mentions.users.first();
     if (!user) {
@@ -502,7 +558,9 @@ async function avatar(message, args) {
       embed: {
         color: 15567,
         thumbnail: {
-          url: user.displayAvatarURL(),
+          url: user.displayAvatarURL()/*,
+          height: 10,
+          width: 10*/
         }
       }
     });
@@ -791,6 +849,198 @@ function logs(message, args, client) {
       else message.author.send(`\`\`\`yaml\nUsage Options:\n\t${getPrefix(message)}logs status\n\t${getPrefix(message)}logs enable\n\t${getPrefix(message)}logs disable\n\t${getPrefix(message)}logs set <channel_id>\n\t${getPrefix(message)}logs user enable\n\t${getPrefix(message)}logs user disable\n\t${getPrefix(message)}logs role enable\n\t${getPrefix(message)}logs role disable\n\t${getPrefix(message)}logs message enable\n\t${getPrefix(message)}logs message disable\n\t${getPrefix(message)}logs channel enable\n\t${getPrefix(message)}logs channel disable\`\`\``);
     }
     else message.channel.send("You are missing the " + userPermissionGroups.admin + " permissions.");
+  }
+  else message.author.send("I am missing the permissions: " + permissionGroups.basic);
+}
+
+function policy(message, args, client) {
+  let receiver;
+  if (_hasPermission(message, permissionGroups.basic) && (!args[0] || args[0] !== 'dm')) {
+    receiver = message.channel;
+  }
+  else receiver = message.author;
+  receiver.send({
+    embed: {
+      title: "Hydra Privacy Policy",
+      author: {
+        name: client.user.name,
+        icon_url: client.user.displayAvatarURL()
+      },
+      color: Math.ceil(Math.random() * 16777215),
+      thumbnail: {
+        url: client.user.displayAvatarURL()
+      },
+      fields: [
+        {
+          name: '\u200b',
+          value: '\u200b',
+          inline: false
+        },
+        {
+          name: "1) What data do you collect, including but not limited to personal identifying information?",
+          value: "Hydra stores server ids and channel ids of servers that have opted in to use features such as welcome, logs, and prefix storage.",
+          inline: false
+        },
+        {
+          name: "2) Why do you need the data?",
+          value: "The server ids and channel ids are used to first identify if a server has opted in to use one of these features, and if yes, which channel to send the required messages to.",
+          inline: false
+        },
+        {
+          name: "3) How do you use the data?",
+          value: "A server id is used to identify whether or not the feature is enabled for a server. The channel ids are used to identify which channel to send the required messages to.",
+          inline: false
+        },
+        {
+          name: "4) Other than Discord the company and users of your own bot on Discord the platform, who do you share your collected data with, if anyone?",
+          value: "This data is not shared with anyone. The only person that has access to this data is the primary developer, `T Peace#9407`. Moderators can view the data for the server they moderate, but not for any other servers.",
+          inline: false
+        },
+        {
+          name: "5) How can users contact you if they have concerns about your bot?",
+          value: "Users can DM the primary developer, `T Peace#9407`, or visit the support server and ask a developer or admin.",
+          inline: false
+        },
+        {
+          name: "6) If you store data, how can users have that data removed?",
+          value: "If a user wishes to delete any stored data, they can use a command to disable the feature. Doing this will delete any stored data. Alternatively, the user can contact `T Peace#9407` and ask to delete the information in the stored file.",
+          inline: false
+        },
+      ],
+      timestamp: new Date(),
+      footer: {
+        icon_url: message.author.displayAvatarURL(),
+        text: message.author.tag
+      }
+    }
+  });
+}
+
+async function custom(message, args, client) {
+  if (_hasPermission(message, permissionGroups.basic)) {
+    if (_userHasPermission(message, userPermissionGroups.admin)) {
+      if (args && args.length >= 2) {
+        switch (args[0]) {
+          case "del":
+          case "delete":
+            switch (cCom.del(message.guild, args[1])) {
+              case "s": message.channel.send("Successfully deleted custom command: `" + args[1] + "`."); break;
+              case "g": message.channel.send("An error occured. Please try again."); break;
+              case "n": message.channel.send(`The custom command \`${args[1]}\` does not exist for this server.`); break;
+            }
+            break;
+          case "add":
+            if (!(args.length >= 4)) {
+              message.author.send(`\`\`\`yaml\nUsage Options\n${getPrefix(message)}cc add <name> message <message_sent>\n${getPrefix(message)}cc add <name> role [availability] <role_ids>\`\`\``);
+              return;
+            }
+            if (allCommands.indexOf(args[1]) > -1) {
+              message.author.send("You cannot make a custom command the same name as an official command.");
+              return;
+            }
+            if (args[2] === "message" || args[2] === "role") {
+              if (args[2] === "message") {
+                let r = await cCom.add(message.guild, args[1], "message", "e", args.slice(3).join(' '));
+                switch (r) {
+                  case "g": message.channel.send("An error occured. Please try again."); break;
+                  case "s": message.channel.send("Successfully added custom command: `" + args[1] + "`."); break;
+                  case "t": message.channel.send("The command `" + args[1] + "` already exists for this guild."); break;
+                }
+              }
+              else {
+                let avail = "e";
+                let roles = [];
+                if (args[3] === "e" || args[3] === "m") avail = args[3];
+                let arr = args.slice(3);
+                for (let i = 0; i < arr.length; i++) {
+                  let role = await message.guild.roles.cache.get(arr[i]);
+                  if (role) roles.push(arr[i]);
+                }
+                if (roles.length === 0) {
+                  message.reply("you need to specify which roles to add when this command is used.");
+                  return;
+                }
+                let r = await cCom.add(message.guild, args[1], "role", avail, roles);
+                switch (r) {
+                  case "g": message.channel.send("An error occured. Please try again."); break;
+                  case "s": message.channel.send("Successfully added custom command: `" + args[1] + "`."); break;
+                  case "t": message.channel.send("The command `" + args[1] + "` already exists for this guild."); break;
+                }
+              }
+            }
+            else {
+              message.author.send(`\`\`\`yaml\nUsage Options\n${getPrefix(message)}cc add <name> message <message_sent>\n${getPrefix(message)}cc add <name> role [availability] <role_ids>\`\`\``);
+            }
+            break;
+          default: message.author.send(`\`\`\`yaml\nUsage Options\n${getPrefix(message)}cc del <command>\n${getPrefix(message)}cc add <name> message <message>\ncc add <name> role [availability] <role_ids>\`\`\``);
+        }
+      }
+      else message.author.send(`\`\`\`yaml\nUsage Options\n${getPrefix(message)}cc del <command>\n${getPrefix(message)}cc add <name> message <message>\ncc add <name> role [availability] <role_ids>\`\`\``);
+    }
+    else message.author.send("You are missing the permissions: " + userPermissionGroups.admin);
+  }
+  else message.author.send("I am missing the permissions: " + permissionGroups.basic);
+}
+
+async function ccL(message, args, client) {
+  if (_hasPermission(message, permissionGroups.basic)) {
+    let list = cCom.list(message.guild);
+    if (list === "g") {
+      message.channel.send("An error occured. Please try again.");
+      return;
+    }
+    else if (list === "e") {
+      message.channel.send("There are no custom commands for this server.");
+      return;
+    }
+    let color = [Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256)];
+    let thumbURL = message.guild.iconURL({dynamic: true});
+    if (!thumbURL) thumbURL = client.user.displayAvatarURL();
+    var embed = {
+      color: color,
+      title: `${message.guild.name} Custom Commands List.`,
+      description: "A list of all custom commands for this server.",
+      thumbnail: {
+        url: thumbURL
+      },
+      author: {
+        name: client.user.tag,
+        icon_url: client.user.displayAvatarURL()
+      },
+      fields: [],
+      timestamp: new Date(),
+      footer: {
+        text: message.author.tag,
+        icon_url: message.author.displayAvatarURL()
+      }
+    };
+    let arr = Object.keys(list);
+    for (let i = 0; i < arr.length; i += 25) {
+      let arr2 = arr.slice(i);
+      for (let j = 0; j < arr2.length && j < 25; j++) {
+        let val;
+        if (list[arr2[j]].type === "message") {
+          val = `Sends the message:\n${list[arr2[j]].action}`;
+        }
+        else {
+          let roles = [];
+          for (let k in list[arr2[j]].action) {
+            roles.push(` \`${await message.guild.roles.cache.get(list[arr2[j]].action[k]).name}\` `);
+          }
+          let usage;
+          if (list[arr2[j]].user === "e") usage = "Everyone";
+          else usage = "Moderators";
+          val = `Adds the roles to selected user:\n${roles}\nUsage: ${usage}`;
+        }
+        embed.fields.push({
+          name: arr2[j],
+          value: val,
+          inline: false
+        });
+      }
+      message.channel.send({embed: embed});
+      embed.fields = [];
+    }
   }
   else message.author.send("I am missing the permissions: " + permissionGroups.basic);
 }

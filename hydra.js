@@ -41,6 +41,9 @@ var getRole = require('./logs.js').getRole;
 var getMessage = require('./logs.js').getMessage;
 var getChannel = require('./logs.js').getChannel;
 
+// Custom commands require
+var useCommand = require('./customCommands.js').useCommand;
+
 var timeout = [''];
 
 /**
@@ -105,6 +108,7 @@ function _ready() {
   setInterval(function() {
     dbl.postStats(client.guilds.cache.size);
   }, 1800000);
+  console.log(client.user.displayAvatarURL());
 }
 
 function _parseMessage(message) {
@@ -256,10 +260,18 @@ function _processCommand(message) {
   let command = message.content.toLowerCase().substr(prefix.getPrefix(message).length);
   let commandArray = command.split(' ');
   if (!commandArray.length) return;
-  if (commands.hasOwnProperty(commandArray[0])) {
-    commands[commandArray[0]](message, commandArray.slice(1), client);
+  let old = commandArray.slice(1);
+  let args = [];
+  for (let i in old) {
+    if (old[i] !== "") args.push(old[i]);
   }
-  else return;
+  if (commands.hasOwnProperty(commandArray[0])) {
+    commands[commandArray[0]](message, args, client);
+  }
+  else {
+    useCommand(message, commandArray[0], args, client);
+    return;
+  }
 }
 
 function _banAdd(guild, user) {
@@ -484,7 +496,13 @@ function _channelCreate(channel) {
       fields: [
         {
           name: "Channel Name",
-          value: `#${channel.name}`
+          value: `${channel.name}`,
+          inline: false
+        },
+        {
+          name: "Channel Type",
+          value: `${channel.type.toUpperCase()}`,
+          inline: false
         }
       ],
       timestamp: new Date(),
@@ -517,7 +535,13 @@ function _channelDelete(channel) {
       fields: [
         {
           name: "Channel Name",
-          value: `#${channel.name}`
+          value: `${channel.name}`,
+          inline: false
+        },
+        {
+          name: "Channel Type",
+          value: `${channel.type}`,
+          inline: false
         }
       ],
       timestamp: new Date(),
@@ -550,12 +574,12 @@ function _channelUpdate(oldChannel, newChannel) {
       fields: [
         {
           name: "Old Channel Name",
-          value: `#${oldChannel.name}`,
+          value: `${oldChannel.name}`,
           inline: true
         },
         {
           name: "New Channel Name",
-          value: `#${newChannel.name}`,
+          value: `${newChannel.name}`,
           inline: true
         }
       ],

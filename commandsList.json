@@ -28,7 +28,7 @@
       },
       {
         "name": "commands",
-        "value": "A list of commands (This)\nEnter `social`, `mod`, `prefix`, `welcome`, or `logs` to access specific sections of the commands list.",
+        "value": "A list of commands (This)\nEnter `social`, `mod`, `prefix`, `welcome`, `custom`, or `logs` to access specific sections of the commands list.",
         "inline": "false"
       },
       {
@@ -124,6 +124,11 @@
       {
         "name": "suggest",
         "value": "Suggest a suggestion for me to have. All suggestions go to the support server.",
+        "inline": "false"
+      },
+      {
+        "name": "policy [dm]",
+        "value": "Receive a list of the privacy policy for Hydra. Enter `dm` if you wish to receive it in a DM.",
         "inline": "false"
       },
       {
@@ -516,6 +521,75 @@
     "footer": {
       "icon_url": "",
       "text": ""
+    }
+  },
+  "customCommands": {
+    "color": "",
+    "author": {
+      "name": "",
+      "icon_url": ""
+    },
+    "thumbnail": {
+      "url": ""
+    },
+    "title": "Hydra Custom Commands",
+    "description": "Command setup for custom commands",
+    "fields": [
+      {
+        "name": "Default Prefix",
+        "value": "",
+        "inline": "false"
+      },
+      {
+        "name": "Guild Prefix",
+        "value": "",
+        "inline": "false"
+      },
+      {
+        "name": "\u200b",
+        "value": "\u200b",
+        "inline": "false"
+      },
+      {
+        "name": "ccl",
+        "value": "Get the list of custom commands for this server.",
+        "inline": "false"
+      },
+      {
+        "name": "cc del <command>",
+        "value": "Delete a custom command for this server.",
+        "inline": "false"
+      },
+      {
+        "name": "cc add <command_name> message <message_sent>",
+        "value": "Add a custom command to send a message.",
+        "inline": "false"
+      },
+      {
+        "name": "cc add <command_name> role [availability] <role_ids>",
+        "value:": "Add a custom command to add roles to a user. If applicable, enter `e` to allow everyone to use this command. Enter `m` to allow only moderators to use it. Default usage is available to everyone.",
+        "inline": "false"
+      },
+      {
+        "name": "\u200b",
+        "value": "\u200b",
+        "inline": "false"
+      },
+      {
+        "name": "<> = Required field",
+        "value": "\u200b",
+        "inline": "false"
+      },
+      {
+        "name": "[] = Optional field",
+        "value": "\u200b",
+        "inline": "false"
+      }
+    ],
+    "timestamp": "",
+    "footer": {
+      "text": "",
+      "icon_url": ""
     }
   }
 }
