@@ -1,5 +1,5 @@
 {
-  "socialCommands": {
+  "social1": {
     "color": "",
     "author": {
       "name": "",
@@ -9,151 +9,179 @@
       "url": ""
     },
     "title": "Hydra Social Commands",
-    "description": "Social commands list",
+    "description": "",
     "fields": [
       {
-        "name": "Default Prefix",
-        "value": "",
-        "inline": "false"
-      },
-      {
-        "name": "Guild Prefix",
-        "value": "",
-        "inline": "false"
-      },
-      {
-        "name": "\u200b",
-        "value": "\u200b",
-        "inline": "false"
-      },
-      {
-        "name": "commands",
-        "value": "A list of commands (This)\nEnter `social`, `mod`, `prefix`, `welcome`, `custom`, or `logs` to access specific sections of the commands list.",
-        "inline": "false"
+        "name": "commands [dm] [page]",
+        "value": "A list of commands.\nEnter `dm` to receive message in a dm. Enter `social`, `mod`, `prefix`, `welcome`, `logs`, or `custom` to access specific sections of the commands list.",
+        "inline": false
       },
       {
         "name": "info",
-        "value": "The information of Hydra.",
-        "inline": "false"
-      },
-      {
-        "name": "hmw <arguments>",
-        "value": "Ask for help from me",
-        "inline": "false"
-      },
-      {
-        "name": "roll [1-3]",
-        "value": "Roll a couple dice. You're not gambling",
-        "inline": "false"
-      },
-      {
-        "name": "flip",
-        "value": "Flip a coin",
-        "inline": "false"
-      },
-      {
-        "name": "ping/pong",
-        "value": "`ping` for ping and `pong` for pong.",
-        "inline": "false"
-      },
-      {
-        "name": "react",
-        "value": "Have me react with all server emojies (or until I reach message reaction limit)",
-        "inline": "false"
-      },
-      {
-        "name": "8ball",
-        "value": "Get wisdom from the trusty 8ball",
-        "inline": "false"
-      },
-      {
-        "name": "blackjack",
-        "value": "Play a little blackjack with an AI",
-        "inline": "false"
-      },
-      {
-        "name": "add <numbers>",
-        "value": "Add numbers together",
-        "inline": "false"
-      },
-      {
-        "name": "subtract <numbers>",
-        "value": "Subtract numbers together. Numbers will subtract from the first.",
-        "inline": "false"
-      },
-      {
-        "name": "multiply <numbers>",
-        "value": "Multiply numbers together",
-        "inline": "false"
-      },
-      {
-        "name": "divide <numbers>",
-        "value": "Divide numbers together. Numbers will divide from the first.",
-        "inline": "false"
+        "value": "The info of Hydra",
+        "inline": false
       },
       {
         "name": "links",
         "value": "A list of important links",
-        "inline": "false"
+        "inline": false
       },
       {
         "name": "invite",
         "value": "A link to invite me with.",
-        "inline": "false"
+        "inline": false
       },
       {
-        "name": "avatar [other user]",
-        "value": "Get your avatar or avatar of user provided",
-        "inline": "false"
+        "name": "policy [dm]",
+        "value": "Receive a list of the privacy policy for Hydra. Enter `dm` if you wish to receive it in a dm.",
+        "inline": false
       },
       {
-        "name": "remind <time> <reminder>",
-        "value": "Set a reminder. Use a number for time. Add S or H directly after the number to indicate seconds or hours. Default is minutes.",
-        "inline": "false"
+        "name": "\u200b",
+        "value": "\u200b",
+        "inline": false
       },
       {
-        "name": "rps <choice> [difficulty]",
-        "value": "Play rock paper scissor. Indicate easy, medium, or hard for the difficulty.",
-        "inline": "false"
+        "name": "<> = required field",
+        "value": "React with ◀️ for the previous page.\nReact with ⏪ for the first page.",
+        "inline": true
+      },
+      {
+        "name": "[] = optional field",
+        "value": "React with ▶ for the next page.\nReact with ⏩ for the last page.",
+        "inline": true
+      }
+    ],
+    "timestamp": "",
+    "footer": {
+      "text": "",
+      "icon_url": ""
+    }
+  },
+  "social2": {
+    "color": "",
+    "author": {
+      "name": "",
+      "icon_url": ""
+    },
+    "thumbnail": {
+      "url": ""
+    },
+    "title": "Hydra Social Commands",
+    "description": "",
+    "fields": [
+      {
+        "name": "suggest",
+        "value": "Suggest a suggestion for me to have. All suggestions go to the support server.",
+        "inline": false
+      },
+      {
+        "name": "hmw <arguments>",
+        "value": "Ask for help from me.",
+        "inline": false
+      },
+      {
+        "name": "roll [1-3]",
+        "value": "Roll some dice. You're not gambling.",
+        "inline": false
+      },
+      {
+        "name": "flip",
+        "value": "Flip a coin.",
+        "inline": false
+      },
+      {
+        "name": "ping/pong",
+        "value": "`ping` for ping and `pong` for pong.",
+        "inline": false
+      },
+      {
+        "name": "\u200b",
+        "value": "\u200b",
+        "inline": false
+      },
+      {
+        "name": "<> = required field",
+        "value": "React with ◀️ for the previous page.\nReact with ⏪ for the first page.",
+        "inline": true
+      },
+      {
+        "name": "[] = optional field",
+        "value": "React with ▶ for the next page.\nReact with ⏩ for the last page.",
+        "inline": true
+      }
+    ],
+    "timestamp": "",
+    "footer": {
+      "text": "",
+      "icon_url": ""
+    }
+  },
+  "social3": {
+    "color": "",
+    "author": {
+      "name": "",
+      "icon_url": ""
+    },
+    "thumbnail": {
+      "url": ""
+    },
+    "title": "Hydra Social Commands",
+    "description": "",
+    "fields": [
+      {
+        "name": "react",
+        "value": "Have me react with all server emojies (or until I reach message reaction limit)",
+        "inline": false
+      },
+      {
+        "name": "8ball",
+        "value": "Get wisdom from the trusty 8ball.",
+        "inline": false
+      },
+      {
+        "name": "blackjack",
+        "value": "Play a little blackjack with an AI.",
+        "inline": false
       },
       {
         "name": "tictactoe",
         "value": "Play tictactoe",
-        "inline": "false"
+        "inline": false
       },
       {
-        "name": "suggest",
-        "value": "Suggest a suggestion for me to have. All suggestions go to the support server.",
-        "inline": "false"
+        "name": "rps <choice>",
+        "value": "Play rock paper scissors.",
+        "inline": false
       },
       {
-        "name": "policy [dm]",
-        "value": "Receive a list of the privacy policy for Hydra. Enter `dm` if you wish to receive it in a DM.",
-        "inline": "false"
+        "name": "avatar [other user]",
+        "value": "Get your avatar or the avatar of another provided user.",
+        "inline": false
       },
       {
         "name": "\u200b",
         "value": "\u200b",
-        "inline": "false"
-      },
-      {
-        "name": "[] = optional field",
-        "value": "\u200b",
-        "inline": "true"
+        "inline": false
       },
       {
         "name": "<> = required field",
-        "value": "\u200b",
-        "inline": "true"
+        "value": "React with ◀️ for the previous page.\nReact with ⏪ for the first page.",
+        "inline": true
+      },
+      {
+        "name": "[] = optional field",
+        "value": "React with ▶ for the next page.\nReact with ⏩ for the last page.",
+        "inline": true
       }
     ],
     "timestamp": "",
     "footer": {
-      "icon_url": "",
-      "text": ""
+      "text": "",
+      "icon_url": ""
     }
   },
-  "logsCommands": {
+  "social4": {
     "color": "",
     "author": {
       "name": "",
@@ -162,181 +190,57 @@
     "thumbnail": {
       "url": ""
     },
-    "title": "Hydra Logging Commands",
-    "description": "Logging commands list. All commands require the ADMINISTRATOR permission.",
+    "title": "Hydra Social Commands",
+    "description": "",
     "fields": [
       {
-        "name": "Default Prefix",
-        "value": "",
-        "inline": "false"
+        "name": "add <numbers>",
+        "value": "Add numbers together.",
+        "inline": false
       },
       {
-        "name": "Guild Prefix",
-        "value": "",
-        "inline": "false"
+        "name": "subtract <numbers>",
+        "value": "Subtract numbers together. Numbers will subtract from the first.",
+        "inline": false
       },
       {
-        "name": "\u200b",
-        "value": "\u200b",
-        "inline": "false"
+        "name": "multiply <numbers>",
+        "value": "Multiply numbers together.",
+        "inline": false
       },
       {
-        "name": "logs set <channel_id>",
-        "value": "Set a logs channel",
-        "inline": "false"
+        "name": "divide <numbers>",
+        "value": "Divide numbers together. Numbers will divide from the first.",
+        "inline": false
       },
       {
-        "name": "logs disable",
-        "value": "Disable logs for this server",
-        "inline": "false"
-      },
-      {
-        "name": "logs enable",
-        "value": "Enable all categories of logging for this server",
-        "inline": "false"
-      },
-      {
-        "name": "logs status",
-        "value": "Get the current status for logs",
-        "inline": "false"
-      },
-      {
-        "name": "logs user enable/disable",
-        "value": "Enable or disable user logs",
-        "inline": "false"
-      },
-      {
-        "name": "logs channel enable/disable",
-        "value": "Enable or disable channel logs",
-        "inline": "false"
-      },
-      {
-        "name": "logs message enable/disable",
-        "value": "Enable or disable channel logs",
-        "inline": "false"
-      },
-      {
-        "name": "logs role enable/disable",
-        "value": "Enable or disable role logs",
-        "inline": "false"
+        "name": "remind <time> <reminder>",
+        "value": "Set a reminder. Use a number for time. Add S or H directly after the number to indicate seconds or hours. Default is minutes.",
+        "inline": false
       },
       {
         "name": "\u200b",
         "value": "\u200b",
-        "inline": "false"
-      },
-      {
-        "name": "[] = optional field",
-        "value": "\u200b",
-        "inline": "true"
+        "inline": false
       },
       {
         "name": "<> = required field",
-        "value": "\u200b",
-        "inline": "true"
+        "value": "React with ◀️ for the previous page.\nReact with ⏪ for the first page.",
+        "inline": true
+      },
+      {
+        "name": "[] = optional field",
+        "value": "React with ▶ for the next page.\nReact with ⏩ for the last page.",
+        "inline": true
       }
     ],
     "timestamp": "",
     "footer": {
-      "icon_url": "",
-      "text": ""
-    }
-  },
-  "welcomeCommands": {
-    "color": "",
-    "author": {
-      "name": "",
+      "text": "",
       "icon_url": ""
-    },
-    "thumbnail": {
-      "url": ""
-    },
-    "title": "Hydra Welcome Commands",
-    "description": "Welcome commands list.\nAll commands require the ADMINISTRATOR permission",
-    "fields": [
-      {
-        "name": "Default Prefix",
-        "value": "",
-        "inline": "false"
-      },
-      {
-        "name": "Guild Prefix",
-        "value": "",
-        "inline": "false"
-      },
-      {
-        "name": "\u200b",
-        "value": "\u200b",
-        "inline": "false"
-      },
-      {
-        "name": "welcome status",
-        "value": "Get the status of welcome messages for this guild.",
-        "inline": "false"
-      },
-      {
-        "name": "welcome enable",
-        "value": "Enable join and leave messages for this guild.",
-        "inline": "false"
-      },
-      {
-        "name": "welcome disable",
-        "value": "Disable join and leave messages for this guild.",
-        "inline": "false"
-      },
-      {
-        "name": "welcome join enable",
-        "value": "Enable join messages for this guild.",
-        "inline": "false"
-      },
-      {
-        "name": "welcome join disable",
-        "value": "Disable join messages for this guild.",
-        "inline": "false"
-      },
-      {
-        "name": "welcome join set <channel_id>",
-        "value": "Set the channel for join messages.\nEnables join messages as well.",
-        "inline": "false"
-      },
-      {
-        "name": "welcome leave enable",
-        "value": "Enable leave messages for this guild.",
-        "inline": "false"
-      },
-      {
-        "name": "welcome leave disable",
-        "value": "Disable leave messages for this guild.",
-        "inline": "false"
-      },
-      {
-        "name": "welcome leave set <channel_id>",
-        "value": "Set the leave message channel.\nEnables leave messages as well.",
-        "inline": "false"
-      },
-      {
-        "name": "\u200b",
-        "value": "\u200b",
-        "inline": "false"
-      },
-      {
-        "name": "[] = optional field",
-        "value": "\u200b",
-        "inline": "true"
-      },
-      {
-        "name": "<> = required field",
-        "value": "\u200b",
-        "inline": "true"
-      }
-    ],
-    "timestamp": "",
-    "footer": {
-      "icon_url": "",
-      "text": ""
     }
   },
-  "modCommands": {
+  "mod1": {
     "color": "",
     "author": {
       "name": "",
@@ -346,52 +250,37 @@
       "url": ""
     },
     "title": "Hydra Moderator Commands",
-    "description": "Moderator commands list",
+    "description": "",
     "fields": [
-      {
-        "name": "Default Prefix",
-        "value": "",
-        "inline": "false"
-      },
-      {
-        "name": "Guild Prefix",
-        "value": "",
-        "inline": "false"
-      },
-      {
-        "name": "\u200b",
-        "value": "\u200b",
-        "inline": "false"
-      },
       {
         "name": "kick <user> [reason]",
         "value": "Kick a user [with reason]. Must have the KICK_MEMBERS permission.",
-        "inline": "false"
+        "inline": false
       },
       {
         "name": "ban <user> [reason]",
         "value": "Ban a user [with reason]. Must have the BAN_MEMBERS permission.",
-        "inline": "false"
+        "inline": false
       },
       {
         "name": "bulkdel <num_of_messages>",
         "value": "Bulk delete a number of messages.",
-        "inline": "false"
+        "inline": false
       },
       {
         "name": "\u200b",
         "value": "\u200b",
-        "inline": "false"
-      },
-      {
-        "name": "[] = optional field",
-        "value": "\u200b",
-        "inline": "true"
+        "inline": false
       },
       {
         "name": "<> = required field",
-        "value": "\u200b",
-        "inline": "true"
+        "value": "React with ◀️ for the previous page.\nReact with ⏪ for the first page.",
+        "inline": true
+      },
+      {
+        "name": "[] = optional field",
+        "value": "React with ▶ for the next page.\nReact with ⏩ for the last page.",
+        "inline": true
       }
     ],
     "timestamp": "",
@@ -400,7 +289,7 @@
       "text": ""
     }
   },
-  "prefixCommands": {
+  "prefix1": {
     "color": "",
     "author": {
       "name": "",
@@ -410,47 +299,32 @@
       "url": ""
     },
     "title": "Hydra Prefix Commands",
-    "description": "Prefix commands list. All commands require the ADMINISTRATOR permission.",
+    "description": "",
     "fields": [
-      {
-        "name": "Default Prefix",
-        "value": "",
-        "inline": "false"
-      },
-      {
-        "name": "Guild Prefix",
-        "value": "",
-        "inline": "false"
-      },
-      {
-        "name": "\u200b",
-        "value": "\u200b",
-        "inline": "false"
-      },
       {
         "name": "prefix set <new_prefix>",
         "value": "Set a new prefix for the guild.",
-        "inline": "false"
+        "inline": false
       },
       {
         "name": "prefix reset",
         "value": "Reset the guild prefix to the global prefix.",
-        "inline": "false"
+        "inline": false
       },
       {
         "name": "\u200b",
         "value": "\u200b",
-        "inline": "false"
-      },
-      {
-        "name": "[] = optional field",
-        "value": "\u200b",
-        "inline": "true"
+        "inline": false
       },
       {
         "name": "<> = required field",
-        "value": "\u200b",
-        "inline": "true"
+        "value": "React with ◀️ for the previous page.\nReact with ⏪ for the first page.",
+        "inline": true
+      },
+      {
+        "name": "[] = optional field",
+        "value": "React with ▶ for the next page.\nReact with ⏩ for the last page.",
+        "inline": true
       }
     ],
     "timestamp": "",
@@ -459,7 +333,316 @@
       "text": ""
     }
   },
-  "musicCommands": {
+  "welcome1": {
+    "color": "",
+    "author": {
+      "name": "",
+      "icon_url": ""
+    },
+    "thumbnail": {
+      "url": ""
+    },
+    "title": "Hydra Welcome Commands",
+    "description": "",
+    "fields": [
+      {
+        "name": "welcome status",
+        "value": "Get the status of welcome messages for this guild.",
+        "inline": false
+      },
+      {
+        "name": "welcome enable",
+        "value": "Enable join and leave messages for this guild.",
+        "inline": false
+      },
+      {
+        "name": "welcome disable",
+        "value": "Disable join and leave messages for this guild.",
+        "inline": false
+      },
+      {
+        "name": "\u200b",
+        "value": "\u200b",
+        "inline": false
+      },
+      {
+        "name": "<> = required field",
+        "value": "React with ◀️ for the previous page.\nReact with ⏪ for the first page.",
+        "inline": true
+      },
+      {
+        "name": "[] = optional field",
+        "value": "React with ▶ for the next page.\nReact with ⏩ for the last page.",
+        "inline": true
+      }
+    ],
+    "timestamp": "",
+    "footer": {
+      "icon_url": "",
+      "text": ""
+    }
+  },
+  "welcome2": {
+    "color": "",
+    "author": {
+      "name": "",
+      "icon_url": ""
+    },
+    "thumbnail": {
+      "url": ""
+    },
+    "title": "Hydra Welcome Commands",
+    "description": "",
+    "fields": [
+      {
+        "name": "welcome join enable",
+        "value": "Enable join messages for this server.",
+        "inline": false
+      },
+      {
+        "name": "welcome join disable",
+        "value": "Disable join messages for this server.",
+        "inline": false
+      },
+      {
+        "name": "welcome join set <channel_id>",
+        "value": "Set the channel for join messages.\nThis action enables join messages as well.",
+        "inline": false
+      },
+      {
+        "name": "\u200b",
+        "value": "\u200b",
+        "inline": false
+      },
+      {
+        "name": "<> = required field",
+        "value": "React with ◀️ for the previous page.\nReact with ⏪ for the first page.",
+        "inline": true
+      },
+      {
+        "name": "[] = optional field",
+        "value": "React with ▶ for the next page.\nReact with ⏩ for the last page.",
+        "inline": true
+      }
+    ],
+    "timestamp": "",
+    "footer": {
+      "icon_url": "",
+      "text": ""
+    }
+  },
+  "welcome3": {
+    "color": "",
+    "author": {
+      "name": "",
+      "icon_url": ""
+    },
+    "thumbnail": {
+      "url": ""
+    },
+    "title": "Hydra Welcome Commands",
+    "description": "",
+    "fields": [
+      {
+        "name": "welcome leave enable",
+        "value": "Enable leave messages for this server.",
+        "inline": false
+      },
+      {
+        "name": "welcome leave disable",
+        "value": "Disable leave messages for this server.",
+        "inline": false
+      },
+      {
+        "name": "welcome leave set <channel_id>",
+        "value": "Set the channel for leave messages.\nThis action enables leave messages as well.",
+        "inline": false
+      },
+      {
+        "name": "\u200b",
+        "value": "\u200b",
+        "inline": false
+      },
+      {
+        "name": "<> = required field",
+        "value": "React with ◀️ for the previous page.\nReact with ⏪ for the first page.",
+        "inline": true
+      },
+      {
+        "name": "[] = optional field",
+        "value": "React with ▶ for the next page.\nReact with ⏩ for the last page.",
+        "inline": true
+      }
+    ],
+    "timestamp": "",
+    "footer": {
+      "icon_url": "",
+      "text": ""
+    }
+  },
+  "log1": {
+    "color": "",
+    "author": {
+      "name": "",
+      "icon_url": ""
+    },
+    "thumbnail": {
+      "url": ""
+    },
+    "title": "Hydra Logging Commands",
+    "description": "",
+    "fields": [
+      {
+        "name": "logs set <channel_id>",
+        "value": "Set a logs channel",
+        "inline": false
+      },
+      {
+        "name": "logs disable",
+        "value": "Disable all categories of logging for this server.",
+        "inline": false
+      },
+      {
+        "name": "logs enable",
+        "value": "Enable all categories of logging for this server.",
+        "inline": false
+      },
+      {
+        "name": "logs status",
+        "value": "Get the current status of logs.",
+        "inline": false
+      },
+      {
+        "name": "\u200b",
+        "value": "\u200b",
+        "inline": false
+      },
+      {
+        "name": "<> = required field",
+        "value": "React with ◀️ for the previous page.\nReact with ⏪ for the first page.",
+        "inline": true
+      },
+      {
+        "name": "[] = optional field",
+        "value": "React with ▶ for the next page.\nReact with ⏩ for the last page.",
+        "inline": true
+      }
+    ],
+    "timestamp": "",
+    "footer": {
+      "icon_url": "",
+      "text": ""
+    }
+  },
+  "log2": {
+    "color": "",
+    "author": {
+      "name": "",
+      "icon_url": ""
+    },
+    "thumbnail": {
+      "url": ""
+    },
+    "title": "Hydra Logging Commands",
+    "description": "",
+    "fields": [
+      {
+        "name": "logs user enable/disable",
+        "value": "Enable or disable user logs",
+        "inline": false
+      },
+      {
+        "name": "logs channel enable/disable",
+        "value": "Enable or disable channel logs",
+        "inline": false
+      },
+      {
+        "name": "logs message enable/disable",
+        "value": "Enable or disable channel logs",
+        "inline": false
+      },
+      {
+        "name": "logs role enable/disable",
+        "value": "Enable or disable role logs",
+        "inline": false
+      },
+      {
+        "name": "\u200b",
+        "value": "\u200b",
+        "inline": false
+      },
+      {
+        "name": "<> = required field",
+        "value": "React with ◀️ for the previous page.\nReact with ⏪ for the first page.",
+        "inline": true
+      },
+      {
+        "name": "[] = optional field",
+        "value": "React with ▶ for the next page.\nReact with ⏩ for the last page.",
+        "inline": true
+      }
+    ],
+    "timestamp": "",
+    "footer": {
+      "icon_url": "",
+      "text": ""
+    }
+  },
+  "custom1": {
+    "color": "",
+    "author": {
+      "name": "",
+      "icon_url": ""
+    },
+    "thumbnail": {
+      "url": ""
+    },
+    "title": "Hydra Custom Commands",
+    "description": "",
+    "fields": [
+      {
+        "name": "ccl",
+        "value": "Get the list of custom commands for this server.",
+        "inline": false
+      },
+      {
+        "name": "cc del <command>",
+        "value": "Delete a custom command for this server.",
+        "inline": false
+      },
+      {
+        "name": "cc add <command_name> message <message_sent>",
+        "value": "Add a custom command to send a message.",
+        "inline": false
+      },
+      {
+        "name": "cc add <command_name> role [availability] <role_ids>",
+        "value": "Add a custom command to add roles to a user. If applicable, enter `e` to allow everyone to use this command. Enter `m` to allow only moderators to use it. Default usage is available to everyone.",
+        "inline": false
+      },
+      {
+        "name": "\u200b",
+        "value": "\u200b",
+        "inline": false
+      },
+      {
+        "name": "<> = required field",
+        "value": "React with ◀️ for the previous page.\nReact with ⏪ for the first page.",
+        "inline": true
+      },
+      {
+        "name": "[] = optional field",
+        "value": "React with ▶ for the next page.\nReact with ⏩ for the last page.",
+        "inline": true
+      }
+    ],
+    "timestamp": "",
+    "footer": {
+      "text": "",
+      "icon_url": ""
+    }
+  },
+  "music": {
     "color": "",
     "author": {
       "name": "",
@@ -521,75 +704,6 @@
     "footer": {
       "icon_url": "",
       "text": ""
-    }
-  },
-  "customCommands": {
-    "color": "",
-    "author": {
-      "name": "",
-      "icon_url": ""
-    },
-    "thumbnail": {
-      "url": ""
-    },
-    "title": "Hydra Custom Commands",
-    "description": "Command setup for custom commands",
-    "fields": [
-      {
-        "name": "Default Prefix",
-        "value": "",
-        "inline": "false"
-      },
-      {
-        "name": "Guild Prefix",
-        "value": "",
-        "inline": "false"
-      },
-      {
-        "name": "\u200b",
-        "value": "\u200b",
-        "inline": "false"
-      },
-      {
-        "name": "ccl",
-        "value": "Get the list of custom commands for this server.",
-        "inline": "false"
-      },
-      {
-        "name": "cc del <command>",
-        "value": "Delete a custom command for this server.",
-        "inline": "false"
-      },
-      {
-        "name": "cc add <command_name> message <message_sent>",
-        "value": "Add a custom command to send a message.",
-        "inline": "false"
-      },
-      {
-        "name": "cc add <command_name> role [availability] <role_ids>",
-        "value:": "Add a custom command to add roles to a user. If applicable, enter `e` to allow everyone to use this command. Enter `m` to allow only moderators to use it. Default usage is available to everyone.",
-        "inline": "false"
-      },
-      {
-        "name": "\u200b",
-        "value": "\u200b",
-        "inline": "false"
-      },
-      {
-        "name": "<> = Required field",
-        "value": "\u200b",
-        "inline": "false"
-      },
-      {
-        "name": "[] = Optional field",
-        "value": "\u200b",
-        "inline": "false"
-      }
-    ],
-    "timestamp": "",
-    "footer": {
-      "text": "",
-      "icon_url": ""
     }
   }
 }

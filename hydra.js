@@ -19,7 +19,7 @@ var config = require('./hydrauth.json'); // Main config file.
 */
 
 var Discord = require('discord.js');
-var client = new Discord.Client();
+var client = new Discord.Client(/*{ws: {intents: ['GUILDS', 'GUILD_MEMBERS', 'GUILD_MESSAGES', 'GUILD_BANS']}}*/);
 var DBL = require('dblapi.js');
 var dbl = new DBL(config.dbl.token, client);
 var commands = require('./commands.js');
@@ -108,7 +108,6 @@ function _ready() {
   setInterval(function() {
     dbl.postStats(client.guilds.cache.size);
   }, 1800000);
-  console.log(client.user.displayAvatarURL());
 }
 
 function _parseMessage(message) {
@@ -229,8 +228,8 @@ function _setActivity() {
   let activity = {
     0: `poker. ${config.prefix}help with ${client.guilds.cache.size} servers`,
     1: `my ${client.guilds.cache.size} servers. ${config.prefix}help for fun`,
-    2: `the ${config.prefix}help of ${client.guilds.cache.size} guilds`,
-    3: `Esports with ${client.guilds.cache.size} guilds on ${config.prefix}help`,
+    2: `${client.guilds.cache.size} servers. ${config.prefix}help`,
+    3: `Esports with ${client.guilds.cache.size} servers`,
     4: `games with ${client.guilds.cache.size} servers.`
   }
   let activityType = {
@@ -501,7 +500,7 @@ function _channelCreate(channel) {
         },
         {
           name: "Channel Type",
-          value: `${channel.type.toUpperCase()}`,
+          value: `${channel.type.substring(0, 1).toUpperCase()}${channel.type.substring(1).toLowerCase()}`,
           inline: false
         }
       ],
@@ -540,7 +539,7 @@ function _channelDelete(channel) {
         },
         {
           name: "Channel Type",
-          value: `${channel.type}`,
+          value: `${channel.type.substring(0, 1).toUpperCase()}${channel.type.substring(1).toLowerCase()}`,
           inline: false
         }
       ],

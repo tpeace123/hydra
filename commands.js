@@ -155,7 +155,7 @@ function hmw(message, args) {
       if (personalProblems.indexOf(help) > -1) message.channel.send("That sounds like a personal problem.");
       else message.channel.send("It looks like you might need help with `" + help + "`");
     }
-    else message.channel.send("I'm not sure what you need help with. Try `" + getPrefix(message) + "hmw [topic]`");
+    else message.channel.send("I'm not sure what you need help with. Try `" + getPrefix(message) + "hmw <topic>`");
   }
   else message.author.send("I don't have the permissions: ", permissionGroups.basic);
 }
@@ -201,86 +201,160 @@ function commandsasd(message, args) {
 
 async function commands(message, args, client) {
   let color = Math.ceil(Math.random() * 16777215);
-  let options = ['social', 'mod', 'prefix', 'welcome'];
+  let date = new Date();
+  let thumbnail = await client.user.displayAvatarURL();
 
-  commandsList.socialCommands.color = color;
-  commandsList.socialCommands.author.name = client.user.tag;
-  commandsList.socialCommands.author.icon_url = client.user.displayAvatarURL();
-  commandsList.socialCommands.thumbnail.url = client.user.displayAvatarURL();
-  commandsList.socialCommands.fields[0].value = config.prefix;
-  commandsList.socialCommands.fields[1].value = getPrefix(message);
-  commandsList.socialCommands.timestamp = new Date();
-  commandsList.socialCommands.footer.icon_url = message.author.displayAvatarURL();
-  commandsList.socialCommands.footer.text = message.author.tag;
+  // commandsList.music.color = color;
+  // commandsList.music.author.name = client.user.tag;
+  // commandsList.music.author.icon_url = client.user.displayAvatarURL();
+  // commandsList.music.thumbnail.url = thumbnail;
+  // commandsList.music.fields[0].value = config.prefix;
+  // commandsList.music.fields[1].value = getPrefix(message);
+  // commandsList.music.timestamp = new Date();
+  // commandsList.music.footer.icon_url = message.author.displayAvatarURL();
+  // commandsList.music.footer.text = message.author.tag;
 
-  commandsList.modCommands.color = color;
-  commandsList.modCommands.author.name = client.user.tag;
-  commandsList.modCommands.author.icon_url = client.user.displayAvatarURL();
-  commandsList.modCommands.thumbnail.url = client.user.displayAvatarURL();
-  commandsList.modCommands.fields[0].value = config.prefix;
-  commandsList.modCommands.fields[1].value = getPrefix(message);
-  commandsList.modCommands.timestamp = new Date();
-  commandsList.modCommands.footer.icon_url = message.author.displayAvatarURL();
-  commandsList.modCommands.footer.text = message.author.tag;
+  commandsList.social1.color = color;
+  commandsList.social1.author.name = client.user.tag;
+  commandsList.social1.author.icon_url = client.user.displayAvatarURL();
+  commandsList.social1.description = "Social commands list page 1/4.\nServer Prefix: `" + getPrefix(message) + "`";
+  commandsList.social1.thumbnail.url = thumbnail;
+  commandsList.social1.timestamp = date;
+  commandsList.social1.footer.icon_url = message.author.displayAvatarURL();
+  commandsList.social1.footer.text = `${message.author.tag}\nThis will timeout after 10 minutes of the last action.`;
 
-  commandsList.logsCommands.color = color;
-  commandsList.logsCommands.author.name = client.user.tag;
-  commandsList.logsCommands.author.icon_url = client.user.displayAvatarURL();
-  commandsList.logsCommands.thumbnail.url = client.user.displayAvatarURL();
-  commandsList.logsCommands.fields[0].value = config.prefix;
-  commandsList.logsCommands.fields[1].value = getPrefix(message);
-  commandsList.logsCommands.timestamp = new Date();
-  commandsList.logsCommands.footer.icon_url = message.author.displayAvatarURL();
-  commandsList.logsCommands.footer.text = message.author.tag;
+  commandsList.social2.color = color;
+  commandsList.social2.author.name = client.user.tag;
+  commandsList.social2.author.icon_url = client.user.displayAvatarURL();
+  commandsList.social2.description = "Social commands list page 2/4.\nServer Prefix: `" + getPrefix(message) + "`";
+  commandsList.social2.thumbnail.url = thumbnail;
+  commandsList.social2.timestamp = date;
+  commandsList.social2.footer.icon_url = message.author.displayAvatarURL();
+  commandsList.social2.footer.text = `${message.author.tag}\nThis will timeout after 10 minutes of the last action.`;
 
-  commandsList.welcomeCommands.color = color;
-  commandsList.welcomeCommands.author.name = client.user.tag;
-  commandsList.welcomeCommands.author.icon_url = client.user.displayAvatarURL();
-  commandsList.welcomeCommands.thumbnail.url = client.user.displayAvatarURL();
-  commandsList.welcomeCommands.fields[0].value = config.prefix;
-  commandsList.welcomeCommands.fields[1].value = getPrefix(message);
-  commandsList.welcomeCommands.timestamp = new Date();
-  commandsList.welcomeCommands.footer.icon_url = message.author.displayAvatarURL();
-  commandsList.welcomeCommands.footer.text = message.author.tag;
+  commandsList.social3.color = color;
+  commandsList.social3.author.name = client.user.tag;
+  commandsList.social3.author.icon_url = client.user.displayAvatarURL();
+  commandsList.social3.description = "Social commands list page 3/4.\nServer Prefix: `" + getPrefix(message) + "`";
+  commandsList.social3.thumbnail.url = thumbnail;
+  commandsList.social3.timestamp = date;
+  commandsList.social3.footer.icon_url = message.author.displayAvatarURL();
+  commandsList.social3.footer.text = `${message.author.tag}\nThis will timeout after 10 minutes of the last action.`;
 
-  commandsList.prefixCommands.color = color;
-  commandsList.prefixCommands.author.name = client.user.tag;
-  commandsList.prefixCommands.author.icon_url = client.user.displayAvatarURL();
-  commandsList.prefixCommands.thumbnail.url = client.user.displayAvatarURL();
-  commandsList.prefixCommands.fields[0].value = config.prefix;
-  commandsList.prefixCommands.fields[1].value = getPrefix(message);
-  commandsList.prefixCommands.timestamp = new Date();
-  commandsList.prefixCommands.footer.icon_url = message.author.displayAvatarURL();
-  commandsList.prefixCommands.footer.text = message.author.tag;
+  commandsList.social4.color = color;
+  commandsList.social4.author.name = client.user.tag;
+  commandsList.social4.author.icon_url = client.user.displayAvatarURL();
+  commandsList.social4.description = "Social commands list page 4/4.\nServer Prefix: `" + getPrefix(message) + "`";
+  commandsList.social4.thumbnail.url = thumbnail;
+  commandsList.social4.timestamp = date;
+  commandsList.social4.footer.icon_url = message.author.displayAvatarURL();
+  commandsList.social4.footer.text = `${message.author.tag}\nThis will timeout after 10 minutes of the last action.`;
 
-  commandsList.customCommands.color = color;
-  commandsList.customCommands.author.name = client.user.tag;
-  commandsList.customCommands.author.icon_url = client.user.displayAvatarURL();
-  commandsList.customCommands.thumbnail.url = client.user.displayAvatarURL();
-  commandsList.customCommands.fields[0].value = config.prefix;
-  commandsList.customCommands.fields[1].value = getPrefix(message);
-  commandsList.customCommands.timestamp = new Date();
-  commandsList.customCommands.footer.icon_url = message.author.displayAvatarURL();
-  commandsList.customCommands.footer.text = message.author.tag;
+  commandsList.mod1.color = color;
+  commandsList.mod1.author.name = client.user.tag;
+  commandsList.mod1.author.icon_url = client.user.displayAvatarURL();
+  commandsList.mod1.description = "Moderator commands list page 1/1.\nServer Prefix: `" + getPrefix(message) + "`";
+  commandsList.mod1.thumbnail.url = thumbnail;
+  commandsList.mod1.timestamp = date;
+  commandsList.mod1.footer.icon_url = message.author.displayAvatarURL();
+  commandsList.mod1.footer.text = `${message.author.tag}\nThis will timeout after 10 minutes of the last action.`;
 
-  // commandsList.musicCommands.color = color;
-  // commandsList.musicCommands.author.name = client.user.tag;
-  // commandsList.musicCommands.author.icon_url = client.user.displayAvatarURL();
-  // commandsList.musicCommands.thumbnail.url = client.user.displayAvatarURL();
-  // commandsList.musicCommands.fields[0].value = config.prefix;
-  // commandsList.musicCommands.fields[1].value = getPrefix(message);
-  // commandsList.musicCommands.timestamp = new Date();
-  // commandsList.musicCommands.footer.icon_url = message.author.displayAvatarURL();
-  // commandsList.musicCommands.footer.text = message.author.tag;
+  commandsList.prefix1.color = color;
+  commandsList.prefix1.author.name = client.user.tag;
+  commandsList.prefix1.author.icon_url = client.user.displayAvatarURL();
+  commandsList.prefix1.description = "Prefix commands list page 1/1. All commands require the administrator permission.\nServer Prefix: `" + getPrefix(message) + "`";
+  commandsList.prefix1.thumbnail.url = thumbnail;
+  commandsList.prefix1.timestamp = date;
+  commandsList.prefix1.footer.icon_url = message.author.displayAvatarURL();
+  commandsList.prefix1.footer.text = `${message.author.tag}\nThis will timeout after 10 minutes of the last action.`;
+
+  commandsList.welcome1.color = color;
+  commandsList.welcome1.author.name = client.user.tag;
+  commandsList.welcome1.author.icon_url = client.user.displayAvatarURL();
+  commandsList.welcome1.description = "Moderator commands list page 1/3. All commands require the administrator permission.\nServer Prefix: `" + getPrefix(message) + "`";
+  commandsList.welcome1.thumbnail.url = thumbnail;
+  commandsList.welcome1.timestamp = date;
+  commandsList.welcome1.footer.icon_url = message.author.displayAvatarURL();
+  commandsList.welcome1.footer.text = `${message.author.tag}\nThis will timeout after 10 minutes of the last action.`;
+
+  commandsList.welcome2.color = color;
+  commandsList.welcome2.author.name = client.user.tag;
+  commandsList.welcome2.author.icon_url = client.user.displayAvatarURL();
+  commandsList.welcome2.description = "Welcome commands list page 2/3. All commands require the administrator permission.\nServer Prefix: `" + getPrefix(message) + "`";
+  commandsList.welcome2.thumbnail.url = thumbnail;
+  commandsList.welcome2.timestamp = date;
+  commandsList.welcome2.footer.icon_url = message.author.displayAvatarURL();
+  commandsList.welcome2.footer.text = `${message.author.tag}\nThis will timeout after 10 minutes of the last action.`;
+
+  commandsList.welcome3.color = color;
+  commandsList.welcome3.author.name = client.user.tag;
+  commandsList.welcome3.author.icon_url = client.user.displayAvatarURL();
+  commandsList.welcome3.description = "Welcome commands list page 3/3. All commands require the administrator permission.\nServer Prefix: `" + getPrefix(message) + "`";
+  commandsList.welcome3.thumbnail.url = thumbnail;
+  commandsList.welcome3.timestamp = date;
+  commandsList.welcome3.footer.icon_url = message.author.displayAvatarURL();
+  commandsList.welcome3.footer.text = `${message.author.tag}\nThis will timeout after 10 minutes of the last action.`;
+
+  commandsList.log1.color = color;
+  commandsList.log1.author.name = client.user.tag;
+  commandsList.log1.author.icon_url = client.user.displayAvatarURL();
+  commandsList.log1.description = "Logging commands list page 1/2. All commands require the administrator permission.\nServer Prefix: `" + getPrefix(message) + "`";
+  commandsList.log1.thumbnail.url = thumbnail;
+  commandsList.log1.timestamp = date;
+  commandsList.log1.footer.icon_url = message.author.displayAvatarURL();
+  commandsList.log1.footer.text = `${message.author.tag}\nThis will timeout after 10 minutes of the last action.`;
+
+  commandsList.log2.color = color;
+  commandsList.log2.author.name = client.user.tag;
+  commandsList.log2.author.icon_url = client.user.displayAvatarURL();
+  commandsList.log2.description = "Logging commands list page 2/2. All commands require the administrator permission.\nServer Prefix: `" + getPrefix(message) + "`";
+  commandsList.log2.thumbnail.url = thumbnail;
+  commandsList.log2.timestamp = date;
+  commandsList.log2.footer.icon_url = message.author.displayAvatarURL();
+  commandsList.log2.footer.text = `${message.author.tag}\nThis will timeout after 10 minutes of the last action.`;
+
+  commandsList.custom1.color = color;
+  commandsList.custom1.author.name = client.user.tag;
+  commandsList.custom1.author.icon_url = client.user.displayAvatarURL();
+  commandsList.custom1.description = "Custom commands info page 1/1. All commands require the administrator permission.\nServer Prefix: `" + getPrefix(message) + "`";
+  commandsList.custom1.thumbnail.url = thumbnail;
+  commandsList.custom1.timestamp = date;
+  commandsList.custom1.footer.icon_url = message.author.displayAvatarURL();
+  commandsList.custom1.footer.text = `${message.author.tag}\nThis will timeout after 10 minutes of the last action.`;
+
+  var list = [
+    commandsList.social1, // Page 0
+    commandsList.social2, // 1
+    commandsList.social3, // 2
+    commandsList.social4, // 3
+    commandsList.mod1, // Page 4
+    commandsList.prefix1, // Page 5
+    commandsList.welcome1, // Page 6
+    commandsList.welcome2, // 7
+    commandsList.log1, // Page 8
+    commandsList.log2, // 9
+    commandsList.custom1 // Page 10
+  ];
 
   switch (args[0]) {
-    case "social": message.author.send({embed: commandsList.socialCommands}); break;
-    case "mod": message.author.send({embed: commandsList.modCommands}); break;
-    case "prefix": message.author.send({embed: commandsList.prefixCommands}); break;
-    case "welcome": message.author.send({embed: commandsList.welcomeCommands}); break;
-    case "logs": message.author.send({embed: commandsList.logsCommands}); break;
-    case "custom": message.author.send({embed: commandsList.customCommands}); break;
-    default: await message.author.send({embed: commandsList.socialCommands}); await message.author.send({embed: commandsList.modCommands}); await message.author.send({embed: commandsList.logsCommands}); await message.author.send({embed: commandsList.prefixCommands}); await message.author.send({embed: commandsList.welcomeCommands}); message.author.send({embed: commandsList.customCommands});
+    case "social": _sendCommands(message, args, client, list, message.channel, 0); break;
+    case "mod": _sendCommands(message, args, client, list, message.channel, 4); break;
+    case "prefix": _sendCommands(message, args, client, list, message.channel, 5); break;
+    case "welcome": _sendCommands(message, args, client, list, message.channel, 6); break;
+    case "logs": _sendCommands(message, args, client, list, message.channel, 8); break;
+    case "custom": _sendCommands(message, args, client, list, message.channel, 10); break;
+    case "dm":
+      switch (args[1]) {
+        case "social": _sendCommands(message, args, client, list, message.author, 0); break;
+        case "mod": _sendCommands(message, args, client, list, message.author, 4); break;
+        case "prefix": _sendCommands(message, args, client, list, message.author, 5); break;
+        case "welcome": _sendCommands(message, args, client, list, message.author, 6); break;
+        case "logs": _sendCommands(message, args, client, list, message.author, 8); break;
+        case "custom": _sendCommands(message, args, client, list, message.author, 10); break;
+        default: _sendCommands(message, args, client, list, message.author, 0);
+      }
+      break;
+    default: _sendCommands(message, args, client, list, message.channel, 0);
   }
 }
 
@@ -407,8 +481,12 @@ async function kick(message, args) {
   if (_hasPermission(message, permissionGroups.kick)) {
     if (_userHasPermission(message, userPermissionGroups.kick)) {
       let member = await message.mentions.members.first();
-      let reason = args.slice(1).join(" ");
-      if (member) _kick(message, member, reason);
+      if (member) {
+        if (message.member.roles.highest.position > member.roles.highest.position || message.guild.ownerID === message.author.id) {
+          _kick(message, member, args.slice(1).join(" "));
+        }
+        else message.channel.send("Your highest role position must be higher than the person you wish to kick.");
+      }
       else {
         member = await message.guild.member(args[0]);
         if (member) _kick(message, member, reason);
@@ -428,7 +506,12 @@ async function ban(message, args) {
       if (member) _ban(message, member, reason);
       else {
         member = await message.guild.member(args[0]);
-        if (member) _ban(message, member, reason);
+        if (member) {
+          if (message.member.roles.highest.position > member.roles.highest.position || message.guild.ownerID === message.author.id) {
+            _ban(message, member, reason);
+          }
+          else message.channel.send("Your highest role position must be higher than the position of the person you wish to ban.");
+        }
         else message.reply("Please mention a guild member to ban.");
       }
     }
@@ -1240,4 +1323,66 @@ function _logChannel(message, args) {
     _logStatus(message);
   }
   else message.author.send(`\`\`\`yaml\nUsage options:\n\t${getPrefix(message)}logs channel enable\n\t${getPrefix(message)}logs channel disable\`\`\``);
+}
+
+async function _sendCommands(message, args, client, list, channel, page = 0) {
+  let sent = await channel.send({embed: list[page]});
+  await sent.react('⏪').catch(function(err) {
+    return;
+  });
+  await sent.react('◀️').catch(function(err) {
+    return;
+  });
+  await sent.react('▶️').catch(function(err) {
+    return;
+  });
+  await sent.react('⏩').catch(function(err) {
+    return;
+  });
+  _commandsReaction(message, args, client, list, channel, page, sent);
+}
+
+async function _commandsReaction(message, args, client, list, channel, page, sent) {
+  const commandFilter = function(reaction, user) {
+    return (reaction.emoji.name === '◀️' || reaction.emoji.name === '▶️' ||
+    reaction.emoji.name === '⏪' || reaction.emoji.name === '⏩') &&
+    user.id === message.author.id
+  };
+  var collector = sent.createReactionCollector(commandFilter, {time: 600000, max: 1, maxUsers: 1});
+  collector.on('collect', async function(r) {
+    if (r.emoji.name === '◀️') {
+      page -= 1;
+      if (page < 0) page = list.length - 1;
+    }
+    else if (r.emoji.name === '⏪') {
+      if (page === 0) {
+        _commandsReaction(message, args, client, list, channel, page, sent);
+        return;
+      }
+      page = 0;
+    }
+    else if (r.emoji.name === '⏩') {
+      if (page === list.length - 1) {
+        _commandsReaction(message, args, client, list, channel, page, sent);
+        return;
+      }
+      page = list.length - 1;
+    }
+    else {
+      page += 1;
+      if (page >= list.length) page = 0;
+    }
+    list[page].timestamp = new Date();
+    sent.edit({embed: list[page]});
+    // await sent.reactions.cache.get(r.emoji.name).remove();
+    // await sent.react(r.emoji.name);
+  
+    // await sent.reactions.removeAll();
+    // await sent.react('⏪');
+    // await sent.react('◀️');
+    // await sent.react('▶️');
+    // await sent.react('⏩');
+    _commandsReaction(message, args, client, list, channel, page, sent);
+  });
+  collector.on('end', function(collected) {});
 }
