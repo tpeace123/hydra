@@ -76,7 +76,8 @@ module.exports = {
   logs: logs,
   policy: policy,
   cc: custom,
-  ccl: ccL
+  ccl: ccL,
+  unban: unban
 }
 
 const allCommands = [
@@ -110,7 +111,8 @@ const allCommands = [
   "tictactoe",
   "logs",
   "policy",
-  "cc"
+  "cc",
+  "unban"
 ];
 
 const permissionGroups = {
@@ -322,6 +324,8 @@ async function commands(message, args, client) {
   commandsList.custom1.footer.icon_url = message.author.displayAvatarURL();
   commandsList.custom1.footer.text = `${message.author.tag}\nThis will timeout after 10 minutes of the last action.`;
 
+
+
   var list = [
     commandsList.social1, // Page 0
     commandsList.social2, // 1
@@ -331,31 +335,36 @@ async function commands(message, args, client) {
     commandsList.prefix1, // Page 5
     commandsList.welcome1, // Page 6
     commandsList.welcome2, // 7
-    commandsList.log1, // Page 8
-    commandsList.log2, // 9
-    commandsList.custom1 // Page 10
+    commandsList.welcome3, // 8
+    commandsList.log1, // Page 9
+    commandsList.log2, // 10
+    commandsList.custom1 // Page 11
   ];
 
+  let ch = message.channel;
+  let page = 0;
   switch (args[0]) {
-    case "social": _sendCommands(message, args, client, list, message.channel, 0); break;
-    case "mod": _sendCommands(message, args, client, list, message.channel, 4); break;
-    case "prefix": _sendCommands(message, args, client, list, message.channel, 5); break;
-    case "welcome": _sendCommands(message, args, client, list, message.channel, 6); break;
-    case "logs": _sendCommands(message, args, client, list, message.channel, 8); break;
-    case "custom": _sendCommands(message, args, client, list, message.channel, 10); break;
+    case "social": ch = message.channel; page = 0; break;
+    case "mod": ch = message.channel; page = 4; break;
+    case "prefix": ch = message.channel; page = 5; break;
+    case "welcome": ch = message.channel; page = 6; break;
+    case "logs": ch = message.channel; page = 9; break;
+    case "custom": ch = message.channel; page = 11; break;
     case "dm":
       switch (args[1]) {
-        case "social": _sendCommands(message, args, client, list, message.author, 0); break;
-        case "mod": _sendCommands(message, args, client, list, message.author, 4); break;
-        case "prefix": _sendCommands(message, args, client, list, message.author, 5); break;
-        case "welcome": _sendCommands(message, args, client, list, message.author, 6); break;
-        case "logs": _sendCommands(message, args, client, list, message.author, 8); break;
-        case "custom": _sendCommands(message, args, client, list, message.author, 10); break;
-        default: _sendCommands(message, args, client, list, message.author, 0);
+        case "social": ch = message.author; page = 0; break;
+        case "mod": ch = message.author; page = 4; break;
+        case "prefix": ch = message.author; page = 5; break;
+        case "welcome": ch = message.author; page = 6; break;
+        case "logs": ch = message.author; page = 9; break;
+        case "custom": ch = message.author; page = 11; break;
+        default: ch = message.author; page = 0;
       }
       break;
-    default: _sendCommands(message, args, client, list, message.channel, 0);
+    default: ch = message.channel; page = 0;
   }
+  if (!_hasPermission(message, permissionGroups.basic)) ch = message.author;
+  _sendCommands(message, args, client, ch, list, page);
 }
 
 async function info(message, args, client) {
@@ -490,7 +499,7 @@ async function kick(message, args) {
       else {
         member = await message.guild.member(args[0]);
         if (member) _kick(message, member, reason);
-        else message.reply("Please mention a guild member to kick.");
+        else message.reply("Please mention a server member to kick.");
       }
     }
     else message.author.send("You don't have the permissions: " + userPermissionGroups.kick);
@@ -512,10 +521,51 @@ async function ban(message, args) {
           }
           else message.channel.send("Your highest role position must be higher than the position of the person you wish to ban.");
         }
-        else message.reply("Please mention a guild member to ban.");
+        else message.reply("Please mention a server member to ban.");
       }
     }
     else message.author.send("You don't have the permissions: " + userPermissionGroups.ban);
+  }
+  else message.author.send("I am missing the permissions: " + permissionGroups.ban);
+}
+
+async function unban(message, args) {
+  if (_hasPermission(message, permissionGroups.ban)) {
+    if (_userHasPermission(message, userPermissionGroups.ban)) {
+      if (!args || !args.length >= 1) {
+        message.author.send(`Usage: ${getPrefix(message)}unban <user_id/username+discriminator>`);
+        return;
+      }
+      let bans = await message.guild.fetchBans();
+      if (await bans.array().length === 0) {
+        message.reply("there are no banned users in this server.");
+        return;
+      }
+      let user;
+      let info = await message.guild.fetchBan(args[0]).catch(function(err) {});
+      if (!info) {
+        let filter = function(ban) {
+          return `${ban.user.username}#${ban.user.discriminator}` === message.content.substring(getPrefix(message).length+6);
+        }
+        info = await bans.find(filter);
+        if (!info) {
+          message.channel.send("I was unable to find this user in the bans list. Check to see if you enter the user information correctly (user id is preferred) or if the user is banned in this server.");
+          return;
+        }
+        user = info.user.id;
+      }
+      else user = args[0];
+      await message.guild.members.unban(user).catch(function(err) {
+        message.channel.send("There was an error unbanning this user.");
+        console.error(err);
+        return;
+      });
+      if (info.reason === null) {
+        message.channel.send(`Unbanned ${info.user.username}#${info.user.discriminator}.`);
+      }
+      else message.channel.send(`Unbanned ${info.user.username}#${info.user.discriminator}.\nUser was previously banned for \`${info.reason}\``);
+    }
+    else message.author.send("You are missing the permissions: " + userPermissionGroups.ban);
   }
   else message.author.send("I am missing the permissions: " + permissionGroups.ban);
 }
@@ -846,7 +896,16 @@ async function remind(message, args) {
       setTimeout(function() {
         message.author.send(`Reminder:\n\`${reason}\``);
       }, time);
-      message.channel.send(`Reminder set for \`${reason}\` in \`${time} milliseconds\``);
+      if (letter) {
+        let sentUnit = args[0][args[0].length-1].toLowerCase();
+        let unit = "";
+        if (sentUnit === "s") unit = "seconds";
+        else unit = "hours";
+        message.channel.send(`Reminder set for \`${reason}\` in \`${args[0].substring(0, args[0].length-1)} ${unit}\``)
+      }
+      else {
+        message.channel.send(`Reminder set for \`${reason}\` in \`${args[0]} minutes\``);
+      }
     }
     else message.author.send(`Usage: ${getPrefix(message)}remind <time> <arguments>`);
   }
@@ -1325,30 +1384,34 @@ function _logChannel(message, args) {
   else message.author.send(`\`\`\`yaml\nUsage options:\n\t${getPrefix(message)}logs channel enable\n\t${getPrefix(message)}logs channel disable\`\`\``);
 }
 
-async function _sendCommands(message, args, client, list, channel, page = 0) {
+async function _sendCommands(message, args, client, channel, list, page = 0) {
   let sent = await channel.send({embed: list[page]});
   await sent.react('⏪').catch(function(err) {
+    console.error(err);
     return;
   });
   await sent.react('◀️').catch(function(err) {
+    console.error(err);
     return;
   });
   await sent.react('▶️').catch(function(err) {
+    console.error(err);
     return;
   });
   await sent.react('⏩').catch(function(err) {
+    console.error(err);
     return;
   });
-  _commandsReaction(message, args, client, list, channel, page, sent);
+  _commandsReaction(message, args, client, list, page, sent);
 }
 
-async function _commandsReaction(message, args, client, list, channel, page, sent) {
+async function _commandsReaction(message, args, client, list, page, sent) {
   const commandFilter = function(reaction, user) {
     return (reaction.emoji.name === '◀️' || reaction.emoji.name === '▶️' ||
     reaction.emoji.name === '⏪' || reaction.emoji.name === '⏩') &&
     user.id === message.author.id
   };
-  var collector = sent.createReactionCollector(commandFilter, {time: 600000, max: 1, maxUsers: 1});
+  var collector = await sent.createReactionCollector(commandFilter, {time: 600000 /*10000*/, max: 1, maxUsers: 1});
   collector.on('collect', async function(r) {
     if (r.emoji.name === '◀️') {
       page -= 1;
@@ -1356,14 +1419,14 @@ async function _commandsReaction(message, args, client, list, channel, page, sen
     }
     else if (r.emoji.name === '⏪') {
       if (page === 0) {
-        _commandsReaction(message, args, client, list, channel, page, sent);
+        _commandsReaction(message, args, client, list, page, sent);
         return;
       }
       page = 0;
     }
     else if (r.emoji.name === '⏩') {
       if (page === list.length - 1) {
-        _commandsReaction(message, args, client, list, channel, page, sent);
+        _commandsReaction(message, args, client, list, page, sent);
         return;
       }
       page = list.length - 1;
@@ -1373,6 +1436,7 @@ async function _commandsReaction(message, args, client, list, channel, page, sen
       if (page >= list.length) page = 0;
     }
     list[page].timestamp = new Date();
+    // if (list[page].color !== color) list[page].color = color;
     sent.edit({embed: list[page]});
     // await sent.reactions.cache.get(r.emoji.name).remove();
     // await sent.react(r.emoji.name);
@@ -1382,7 +1446,8 @@ async function _commandsReaction(message, args, client, list, channel, page, sen
     // await sent.react('◀️');
     // await sent.react('▶️');
     // await sent.react('⏩');
-    _commandsReaction(message, args, client, list, channel, page, sent);
+    _commandsReaction(message, args, client, list, page, sent);
   });
-  collector.on('end', function(collected) {});
+  collector.on('end', function(collected) {
+  });
 }

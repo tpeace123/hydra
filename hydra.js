@@ -19,7 +19,7 @@ var config = require('./hydrauth.json'); // Main config file.
 */
 
 var Discord = require('discord.js');
-var client = new Discord.Client(/*{ws: {intents: ['GUILDS', 'GUILD_MEMBERS', 'GUILD_MESSAGES', 'GUILD_BANS']}}*/);
+var client = new Discord.Client({ws: {intents: ['GUILDS', 'GUILD_MEMBERS', 'GUILD_MESSAGES', 'GUILD_BANS', 'GUILD_MESSAGE_REACTIONS', 'DIRECT_MESSAGE_REACTIONS']}});
 var DBL = require('dblapi.js');
 var dbl = new DBL(config.dbl.token, client);
 var commands = require('./commands.js');
@@ -102,7 +102,7 @@ client.on('channelDelete', _channelDelete);
 client.on('channelUpdate', _channelUpdate);
 
 function _ready() {
-  console.log(`\nConnected as ${client.user.tag}`);
+  console.log(`\nConnected as ${client.user.tag}\n`);
   _setFirstActivity();
   _setActivity();
   setInterval(function() {
@@ -126,11 +126,11 @@ function _setFirstActivity() {
   client.user.setActivity(`Poker on ${config.prefix}help with ${client.guilds.cache.size} servers.`);
 }
 
-function _memberJoin(member) {
+async function _memberJoin(member) {
   // Check if join messages are enabled or if guild is DBL
   if (!welJoinEnabled(member.guild) || member.guild.id === '264445053596991498') return;
   // Get channel
-  let channel = member.guild.channels.cache.get(welJoinChannel(member.guild));
+  let channel = await member.guild.channels.cache.get(welJoinChannel(member.guild));
   // Check if channel exists
   if (!channel) return;
   // Send welcome embed
@@ -166,11 +166,11 @@ function _memberJoin(member) {
   });
 }
 
-function _memberLeave(member) {
+async function _memberLeave(member) {
   // Check if leave messages are enabled or if guild is DBL
   if (!welLeaveEnabled(member.guild) || member.guild.id === '264445053596991498') return;
   // Get channel
-  let channel = member.guild.channels.cache.get(welLeaveChannel(member.guild));
+  let channel = await member.guild.channels.cache.get(welLeaveChannel(member.guild));
   // Check if channel exists
   if (!channel) return;
   // Send leave embed

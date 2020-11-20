@@ -12,7 +12,7 @@
     "description": "",
     "fields": [
       {
-        "name": "commands [dm] [page]",
+        "name": "commands [page]",
         "value": "A list of commands.\nEnter `dm` to receive message in a dm. Enter `social`, `mod`, `prefix`, `welcome`, `logs`, or `custom` to access specific sections of the commands list.",
         "inline": false
       },
@@ -263,8 +263,13 @@
         "inline": false
       },
       {
+        "name": "unban <user>",
+        "value": "Unban a user. Must have the BAN_MEMBERS permission. Enter either user id or username and discriminator (Example: User#9999).\nAll arguments provided will be considered the arguments for the user.",
+        "inline": false
+      },
+      {
         "name": "bulkdel <num_of_messages>",
-        "value": "Bulk delete a number of messages.",
+        "value": "Bulk delete a number of messages. Must have the MANAGE_MESSAGES permission.",
         "inline": false
       },
       {
