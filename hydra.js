@@ -24,7 +24,8 @@ var client = new Discord.Client({ws: {intents: ['GUILDS', 'GUILD_MEMBERS', 'GUIL
 var DBL = require('dblapi.js');
 var dbl = new DBL(config.dbl.token, client);
 var commands = require('./commands.js');
-var voiceCommands = require('./voiceCommands.js');
+// var voiceCommands = require('./voiceCommands.js');
+var slashCommands = require('./slashCommands.js');
 
 // Prefix require
 var prefix = require('./prefix.js');
@@ -104,6 +105,8 @@ client.on('channelDelete', _channelDelete);
 
 client.on('channelUpdate', _channelUpdate);
 
+client.ws.on('INTERACTION_CREATE', _interaction);
+
 function _ready() {
   console.log(`\nConnected as ${client.user.tag}\n`);
   _setFirstActivity();
@@ -111,6 +114,34 @@ function _ready() {
   setInterval(function() {
     dbl.postStats(client.guilds.cache.size);
   }, 1800000);
+  if (client.user.id === '543909504706674688') {
+    client.api.applications(client.user.id).commands.post({
+      data: {
+        name: "hmw",
+        description: "Ask for help.",
+        options: [
+          {
+            name: "help",
+            description: "The help you need.",
+            type: 3,
+            required: true
+          }
+        ]
+      }
+    });
+    client.api.applications(client.user.id).commands.post({
+      data: {
+        name: "policy",
+        description: "Receive the privacy policy."
+      }
+    });
+    client.api.applications(client.user.id).commands.post({
+      data: {
+        name: "prefix",
+        description: "Receive the prefix for your server."
+      }
+    });
+  }
 }
 
 function _parseMessage(message) {
@@ -612,4 +643,34 @@ function _channelUpdate(oldChannel, newChannel) {
       }
     }
   });
+}
+
+async function _interaction(inter) {
+  // console.log(inter);
+  if (inter.type !== 2) return;
+  if (!slashCommands.hasOwnProperty(inter.data.name)) return;
+  // console.log(inter.data.options);
+  // inter is an Interaction object https://discord.dev/interactions/slash-commands#interaction
+  // client.api.interactions(inter.id, inter.token).callback.post({data: {type: 4, data: {content: 'Pong!'}}});
+  if (inter.data.name === "policy") {
+    client.api.interactions(inter.id, inter.token).callback.post({
+      data: {
+        type: 4,
+        data: {
+          content: "",
+          embeds: await slashCommands[inter.data.name](inter.data.options, client, inter.member)
+        }
+      }
+    });
+  }
+  else {
+    client.api.interactions(inter.id, inter.token).callback.post({
+      data: {
+        type: 4,
+        data: {
+          content: await slashCommands[inter.data.name](inter.data.options, client, inter.member, inter.guild_id)
+        }
+      }
+    });
+  }
 }
