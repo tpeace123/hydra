@@ -19,11 +19,12 @@ var config = require('./hydrauth.json'); // Main config file.
 */
 
 var Discord = require('discord.js');
+// var client = new Discord.Client();
 var client = new Discord.Client({ws: {intents: ['GUILDS', 'GUILD_MEMBERS', 'GUILD_MESSAGES', 'GUILD_BANS', 'GUILD_MESSAGE_REACTIONS', 'DIRECT_MESSAGE_REACTIONS']}});
 var DBL = require('dblapi.js');
 var dbl = new DBL(config.dbl.token, client);
 var commands = require('./commands.js');
-// var voiceCommands = require('./voiceCommands.js');
+var voiceCommands = require('./voiceCommands.js');
 
 // Prefix require
 var prefix = require('./prefix.js');
@@ -45,6 +46,8 @@ var getChannel = require('./logs.js').getChannel;
 var useCommand = require('./customCommands.js').useCommand;
 
 var timeout = [''];
+
+// Fix commands with class maybe
 
 /**
  * Events
@@ -113,12 +116,18 @@ function _ready() {
 function _parseMessage(message) {
   if (message && (message.author === client.user || message.author.bot || !message.guild)) return;
   else if (message && message.content && message.content.toLowerCase().startsWith(prefix.getPrefix(message))) _processCommand(message);
+  else if (message && message.cleanContent && message.cleanContent.startsWith(`@${client.user.username}`)) {
+    if (message.guild.me.hasPermission(["SEND_MESSAGES"])) {
+      message.channel.send(`My prefix for this server is: \`${prefix.getPrefix(message)}\``);
+    }
+    else message.author.send(`My prefix for this server is: \`${prefix.getPrefix(message)}\``);
+  }
   else return;
 }
 
 async function _parseVC(message) {
   if (message && (message.author === client.user || message.author.bot || !message.guild)) return;
-  else if (message && message.content && message.content.toLowerCase().startsWith(prefix.getPrefix())) _vcCommand(message);
+  else if (message && message.content && message.content.toLowerCase().startsWith(prefix.getPrefix())) _processVC(message);
   else return;
 }
 
@@ -270,6 +279,20 @@ function _processCommand(message) {
   else {
     useCommand(message, commandArray[0], args, client);
     return;
+  }
+}
+
+function _processVC(message) {
+  let command = message.content.toLowerCase().substr(prefix.getPrefix(message).length);
+  let commandArray = command.split(' ');
+  if (!commandArray.length) return;
+  let old = commandArray.slice(1);
+  let args = [];
+  for (let i in old) {
+    if (old[i] !== "") args.push(old[i]);
+  }
+  if (voiceCommands.hasOwnProperty(commandArray[0])) {
+    voiceCommands[commandArray[0]](message, commandArray.slice(1), client);
   }
 }
 

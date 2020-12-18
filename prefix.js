@@ -1,7 +1,8 @@
 module.exports = {
   getPrefix: getPrefix,
   setPrefix: setPrefix,
-  resetPrefix: resetPrefix
+  resetPrefix: resetPrefix,
+  getSlashPrefix: getSlashPrefix
 }
 
 var fs = require('fs');
@@ -30,4 +31,9 @@ function resetPrefix(message) {
   fs.writeFile('./hydra_json/prefixes.json', JSON.stringify(prefixes), function(err) {
     if (err) console.error(err);
   });
+}
+
+function getSlashPrefix(gid) {
+  if (gid && prefixes[gid]) return prefixes[gid];
+  else return defaultPrefix;
 }

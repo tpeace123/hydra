@@ -3,6 +3,7 @@
 Hydra is a multi-purpose Discord bot.
 It has several moderation features such as kick and ban and social features.
 Hydra.js is written using Node.js and the Discord library discord.js.
+Hydra uses Discord's new feature: slash commands.
 
 #### [Discord Bot List](https://top.gg/bot/543909504706674688)
 #### [Invite Link](https://discord.com/api/oauth2/authorize?client_id=543909504706674688&permissions=8&scope=bot)

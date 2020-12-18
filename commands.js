@@ -1047,7 +1047,7 @@ function policy(message, args, client) {
           name: "6) If you store data, how can users have that data removed?",
           value: "If a user wishes to delete any stored data, they can use a command to disable the feature. Doing this will delete any stored data. Alternatively, the user can contact `T Peace#9407` and ask to delete the information in the stored file.",
           inline: false
-        },
+        }
       ],
       timestamp: new Date(),
       footer: {
